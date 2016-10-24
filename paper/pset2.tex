@@ -14,6 +14,8 @@
 %\usepackage[printwatermark]{xwatermark}
 %\newwatermark*[allpages,color=gray!50,angle=45,scale=3,xpos=0,ypos=0]{DRAFT}
 
+\DeclareMathOperator{\sgn}{sgn}
+\newcommand{\sind}[1]{^{(#1)}}
 
 \title{6.867: Problem Set 2}
 \date{October 25, 2016}
@@ -27,9 +29,108 @@
 %    PROBLEM 1
 % % % % % % % % % %
 
-\section{stuff}
+\section{Logistic Regression}
 
-\subsection{and things}
+
+
+% % % % % % % % % %
+%    PROBLEM 2
+% % % % % % % % % %
+
+\section{Support Vector Machines (SVM)}
+
+We implemented the dual form of soft-SVM
+with third-party convex optimization software.
+Recall that the soft-SVM dual optimization problem takes the form
+\begin{equation}
+    \label{eq:soft-svm-dual}
+    \begin{array}{ll@{}ll}
+        \text{maximize}  &\displaystyle -\f{1}{2}\sum_{i,j} \alpha_i \alpha_j y\sind{i} y\sind{j} \angb{x\sind{i}, x\sind{j}}
+        +
+        \sum_i \alpha_i \\
+        \text{subject to}& 0 \le \alpha_i \le C\\
+        & \displaystyle\sum_{i=1}^n \alpha_i y\sind{i} = 0
+    \end{array}
+\end{equation}
+for training data $x\sind{i}, y\sind{i}$ ($i=1, \dots, n$),
+with labels $y\sind i = \pm 1$.
+Given a new data point $x$,
+we would predict its label $y$ as
+\begin{equation}
+    \label{eq:soft-svm-predict}
+    y = \sgn\lt(\sum_i \alpha^*_i y\sind{i} \angb{x\sind{i}, x}\rt)
+\end{equation}
+where $\alpha^*_i$ is the optimal value of $\alpha_i$
+from the previous optimization.
+
+% TODO
+% Show in your report the constraints and objective that you generate for the 2D problem with positive examples (2, 2), (2, 3) and negative examples (0, -1), (-3, -2). Which examples are support vectors?
+
+We tested our soft-SVM implementation
+on the same four 2D datasets from the previous section.
+% TODO
+% makes sure 2D datasets are mentioned in previous section
+Setting the regularization parameter $C=1$,
+we get % TODO fill in
+
+
+\subsection{Kernelization}
+
+It is often useful to map our raw data
+with some nonlinear feature map $\phi$
+into a higher dimensional feature space.
+However, it is often infeasible to compute and store in memory
+all the values $\phi(x\sind{i})$.
+
+Therefore, we recall the ``kernel trick": the insight that
+because Equation~\ref{eq:soft-svm-dual} and \ref{eq:soft-svm-predict}
+only refer to values $\phi(x\sind{i})$ inside inner products
+with other $\phi(x\sind{j})$,
+we only need the kernel function
+\begin{equation}
+    k(x, x') = \angb{\phi\lt(x\rt), \phi\lt(x'\rt)},
+\end{equation}
+which is usually much easier to compute than the feature map $\phi$.
+
+By replacing the inner products in
+Equations~\ref{eq:soft-svm-dual} and \ref{eq:soft-svm-predict}
+with the corresponding kernels,
+we arrive at the kernelized soft-SVM optimization problem.
+
+We tested our kernelized SVM routine with a linear kernel
+\begin{equation}
+    k(x, x') = 1 + x\cdot x'
+\end{equation}
+and with Gaussian RBF kernels
+\begin{equation}
+    k(x, x') = \exp\lt(-\f{|x - x'|^2}{2\sigma^2}\rt)
+\end{equation}
+with varying bandwidth~$\sigma$.  % TODO how did sigma vary?
+We chose values of $C$ in
+\[
+    C \in \{0.01, 0.1, 1, 10, 100\}
+\]
+
+% TODO
+% Report your results and answer the following questions:
+%
+%(a) What happens to the geometric margin 1/|w| as C increases? Will this always happen as we increase C?%(b) What happens to the number of support vectors as C increases?
+%%(c) The value of C will typically change the resulting classifier and therefore also affects the accuracy on test examples. Why would maximizing the geometric margin 1/||w|| on the training set not be an appropriate criterion for selecting C? Is there an alternative criterion that we could use for this purpose?
+
+
+
+% % % % % % % % % %
+%    PROBLEM 3
+% % % % % % % % % %
+
+\section{SVMs with Pegasos}
+
+% % % % % % % % % %
+%    PROBLEM 4
+% % % % % % % % % %
+
+\section{MNIST Digit Recognition}
+
 
 \end{multicols}
 
