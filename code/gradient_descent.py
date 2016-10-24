@@ -43,20 +43,14 @@ def gradient_descent(x_init, objective, gradient, eta = 0.000001, threshold = 0.
     delta_objectives = []
 
     while True:
-        # i = iterations % n
-        i = random.randrange(n)
-        t = iterations # t, as in handout
-
-        if stochastic:
-            current_x, grad = update(gradient, current_x, eta, i, t)
-        else:
-            current_x, grad = update(gradient, current_x, eta)
+        # update step
+        current_x, grad = update(gradient, current_x, eta)
 
         current_norm = np.linalg.norm(grad)
         grad_norms.append(current_norm)
         
         # calculate objective function
-        fx1 = sum([objective(current_x, i) for i in range(n)]) if stochastic else objective(current_x)
+        fx1 = objective(current_x)
         
         delta_objectives.append(tuple([current_x, fx1, fx1 - fx0]))
         # delta_objectives.append(fx1 - fx0)
@@ -78,31 +72,21 @@ def gradient_descent(x_init, objective, gradient, eta = 0.000001, threshold = 0.
         fx0 = fx1
         iterations += 1
     
-    # print("We updated to {}\n".format(current_x))
     print("Converged after {} iterations.".format(iterations))
+    return (current_x, grad_norms, delta_objectives)
 
-    return (current_x, fx1, iterations, grad_norms, delta_objectives)
-
-def update(gradient, x, eta, i = None, t = None):
+def update(gradient, x, eta):
     """
-    update(gradient, n, current_x, eta, i) returns the
+    update(gradient, n, x, eta) returns the
     new x value after updating.
 
     Parameters
         gradient    gradient function
         x           vector to be updated
         eta         constant step size
-        i           optional, to specify stochastic
     """
-    step = eta
-    if i is not None:
-        assert t is not None
-        grad = gradient(x, i)
-
-    else:
-        grad = gradient(x)
-
-    x_new = x - step * grad
+    grad = gradient(x)
+    x_new = x - eta * grad
 
     return (x_new, grad)
 

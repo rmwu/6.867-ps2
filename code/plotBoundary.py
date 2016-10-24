@@ -2,6 +2,8 @@ import pdb
 import numpy as np
 import pylab as pl
 
+import matplotlib.pyplot as plt
+
 # X is data matrix (each row is a data point)
 # Y is desired output (1 or -1)
 # scoreFn is a function of a data point
@@ -28,3 +30,16 @@ def plotDecisionBoundary(X, Y, scoreFn, values, title="", save_path=None):
         pl.savefig(save_path, format='pdf')
 
     pl.axis('tight')
+
+def plot_weights(delta_obj):
+    weight_norms = [np.linalg.norm(vals[0]) for vals in delta_obj]
+    iterations = len(weight_norms)
+        
+    plt.plot(np.arange(iterations), weight_norms, color="blue")
+    
+    plt.xlabel("Number of iterations")
+
+    y_axis_label = "||w||"
+    plt.ylabel(y_axis_label)
+    
+    plt.show()
