@@ -1,11 +1,15 @@
+import sys
+
 from numpy import *
 from plotBoundary import *
 import pylab as pl
-# import your SVM training code
+
+import svm
 
 # parameters
-name = 'ls'
-print '======Training======'
+name = sys.argv[1]
+C = float(sys.argv[2])
+print('======Training======')
 # load data from csv files
 train = loadtxt('data/data'+name+'_train.csv')
 # use deep copy here to make cvxopt happy
@@ -13,15 +17,17 @@ X = train[:, 0:2].copy()
 Y = train[:, 2:3].copy()
 
 # Carry out training, primal and/or dual
-### TODO ###
+kernel = svm.make_gaussian_rbf(1)
+alphas, predictSVM = svm.train_svm(X, Y, C=C, kernel_func=kernel)
+
 # Define the predictSVM(x) function, which uses trained parameters
-### TODO ###
+pass
 
 # plot training results
 plotDecisionBoundary(X, Y, predictSVM, [-1, 0, 1], title = 'SVM Train')
 
 
-print '======Validation======'
+print('======Validation======')
 # load data from csv files
 validate = loadtxt('data/data'+name+'_validate.csv')
 X = validate[:, 0:2]
