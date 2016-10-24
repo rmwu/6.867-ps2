@@ -1,4 +1,4 @@
-data/*
+code/data/*
 .DS_STORE
 *.pyc
 .ipynb_checkpoints
