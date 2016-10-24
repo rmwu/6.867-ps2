@@ -90,7 +90,6 @@ def train_svm(X, Y, C=float('inf'),
 
     optimal_bias = Y[i] - (alphas * Y).T.dot(kernel_function(X, X[i]))
 
-
     if verbose:
         optimal_weight = X.T.dot(alphas * Y)
         print("index i of support vector for computation of b, alpha_i: {}" \

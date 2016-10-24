@@ -48,7 +48,7 @@ def del_nll(W, X, y, lambdaa):
 
     return grad
 
-def lr_run(W0, X, y, lambdaa):
+def lr_run(w0, X, y, lambdaa):
     """
     gradient_descent(x_init, objective, gradient, eta = 0.000001, threshold = 0.01, 
                      delta = 0.000001, conv_by_grad = False,
@@ -59,13 +59,12 @@ def lr_run(W0, X, y, lambdaa):
     gradient = lambda w : del_nll(w, X, y, lambdaa)
     eta = 0.0001
     threshold = 0.000001
-    stochastic = False
 
-    results = gd.gradient_descent(W0, obj, gradient, eta, threshold, stochastic)
-    W = results[0]
-    print("Converged to {} from {}.".format(W, W0))
+    results = gd.gradient_descent(w0, obj, gradient, eta, threshold)
+    w = results[0]
+    print("Converged to {} from {}.".format(w, w0))
     
-    return W
+    return results
     
 def lr_predict(W):
     return lambda x : (1 if s(W.T.dot(x)) > 0.5 else -1)
