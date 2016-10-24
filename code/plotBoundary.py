@@ -7,7 +7,7 @@ import pylab as pl
 # scoreFn is a function of a data point
 # values is a list of values to plot
 
-def plotDecisionBoundary(X, Y, scoreFn, values, title = ""):
+def plotDecisionBoundary(X, Y, scoreFn, values, title="", save_path=None):
     # Plot the decision boundary. For that, we will asign a score to
     # each point in the mesh [x_min, m_max]x[y_min, y_max].
     x_min, x_max = X[:, 0].min() - 1, X[:, 0].max() + 1
@@ -23,4 +23,8 @@ def plotDecisionBoundary(X, Y, scoreFn, values, title = ""):
     # Plot the training points
     pl.scatter(X[:, 0], X[:, 1], c=(1.-Y), s=50, cmap = "coolwarm", marker=".", edgecolors="none")
     pl.title(title)
+
+    if save_path:
+        pl.savefig(save_path, format='pdf')
+
     pl.axis('tight')
