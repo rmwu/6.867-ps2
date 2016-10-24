@@ -44,7 +44,6 @@ def del_nll(W, X, y, lambdaa):
         grad += summand
     
     norm = 2 * lambdaa * W # L2 normalizing
-    norm[0] = 0
     grad += norm
 
     return grad
