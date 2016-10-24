@@ -48,16 +48,18 @@ def train_svm(X, Y, C=float('inf'),
 
 
     kernel_matrix = None
-    kernel_function = lambda x1, x2: x1.dot(x2)
+    kernel_function = lambda x1, x2: x1.dot(x2.T)
     if kernel_mat:
         kernel_matrix = kernel_mat
     elif kernel_func:
-        kernel_matrix = np.array(
-            [kernel_func(X, X[j]) for j in range(n)])
         kernel_function = kernel_func
-
+        kernel_matrix = kernel_function(X, X)
     else:
         kernel_matrix = X.dot(X.T)  # dot product kernel
+
+    if kernel_matrix.shape != (n, n):
+        raise ValueError("kernel matrix has wrong shape {} != {}" \
+            .format(kernel_matrix.shape, (n, n)))
 
     P = cvxopt.matrix(Y.dot(Y.T) * kernel_matrix, tc='d')
     q = cvxopt.matrix(-1 * np.ones(Y.shape))  # n x 1
@@ -101,18 +103,25 @@ def train_svm(X, Y, C=float('inf'),
     def predictor(new_x):
         return (optimal_bias + (alphas * Y).T.dot(kernel_function(X, new_x)))
 
-    return (alphas, predictor)
+    return (clipped_alphas, predictor)
 
 def linear_kernel(z1, z2):
-    return 1 + z1.dot(z2)
+    return 1 + z1.dot(z2.T)
 
 def make_gaussian_rbf(bandwidth):
     """
     Make a Gaussian RBF kernel with given bandwidth.
     """
     def rbf_kernel(z1, z2):
-        delta = z1 - z2
-        return np.exp(- np.sum(np.atleast_2d(delta * delta), axis=1) / (2 * bandwidth ** 2))
+        zz1 = np.atleast_2d(z1)
+        zz2 = np.atleast_2d(z2)
+        assert len(zz1.shape) == len(zz2.shape) == 2
+
+        # delta = z1 - z2
+        # return np.exp(- np.sum(np.atleast_2d(delta * delta), axis=1) / (2 * bandwidth ** 2))
+
+        delta_tensor = np.expand_dims(zz1, axis=1) - np.expand_dims(zz2, axis=0)
+        return np.exp(- np.sum(delta_tensor * delta_tensor, axis=2) / (2 * bandwidth ** 2))
 
     return rbf_kernel
 

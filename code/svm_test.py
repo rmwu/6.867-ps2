@@ -6,9 +6,23 @@ import pylab as pl
 
 import svm
 
+import argparse
+
+parser = argparse.ArgumentParser()
+parser.add_argument("data_name", help="name of the dataset to run on")
+parser.add_argument("C", type=float, help="SVM regularization parameter")
+
+kernel_group = parser.add_mutually_exclusive_group()
+kernel_group.add_argument("--rbf", type=float, help="if specified, use RBF kernel with specified bandwidth")
+kernel_group.add_argument("--linear", action="store_true", help="use the linear kernel")
+
+args = parser.parse_args()
+
 # parameters
-name = sys.argv[1]
-C = float(sys.argv[2])
+name = args.data_name
+C = args.C
+rbf_sigma = args.rbf
+
 print('======Training======')
 # load data from csv files
 train = loadtxt('data/data'+name+'_train.csv')
@@ -17,7 +31,12 @@ X = train[:, 0:2].copy()
 Y = train[:, 2:3].copy()
 
 # Carry out training, primal and/or dual
-kernel = svm.make_gaussian_rbf(1)
+kernel = None
+if rbf_sigma:
+	kernel = svm.make_gaussian_rbf(rbf_sigma)
+if args.linear:
+	kernel = svm.linear_kernel
+
 alphas, predictSVM = svm.train_svm(X, Y, C=C, kernel_func=kernel)
 
 # Define the predictSVM(x) function, which uses trained parameters
@@ -32,6 +51,14 @@ print('======Validation======')
 validate = loadtxt('data/data'+name+'_validate.csv')
 X = validate[:, 0:2]
 Y = validate[:, 2:3]
+
+
+errors = np.not_equal(Y.T, np.sign(predictSVM(X)))
+print("validation error rate: {} = {}/{}" \
+	.format(np.mean(errors),
+		    np.sum(errors),
+		    errors.size))
+
 # plot validation results
 plotDecisionBoundary(X, Y, predictSVM, [-1, 0, 1], title = 'SVM Validate')
 pl.show()
