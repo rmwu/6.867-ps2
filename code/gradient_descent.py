@@ -32,6 +32,7 @@ def gradient_descent(x_init, objective, gradient, eta = 0.000001, threshold = 0.
         stochastic  true if stochastic updates, false by default
     """
     iterations = 0 # counter
+
     current_x = x_init # this one is updated
     n = x_init.shape[0]
 
@@ -53,16 +54,8 @@ def gradient_descent(x_init, objective, gradient, eta = 0.000001, threshold = 0.
 
         current_norm = np.linalg.norm(grad)
         grad_norms.append(current_norm)
-
-        # estimate gradient norm, gradient
-        # if stochastic:
-        #     est_grad = central_difference(objective, current_x, delta, i)
-        # else:
-        #     est_grad = central_difference(objective, current_x, delta)
-        # est_slope = np.linalg.norm(est_grad)
         
         # calculate objective function
-        
         fx1 = sum([objective(current_x, i) for i in range(n)]) if stochastic else objective(current_x)
         
         delta_objectives.append(tuple([current_x, fx1, fx1 - fx0]))
@@ -84,9 +77,9 @@ def gradient_descent(x_init, objective, gradient, eta = 0.000001, threshold = 0.
         # update "past" objective function
         fx0 = fx1
         iterations += 1
-
-    print("Converged after {} iterations\n".format(iterations))
+    
     # print("We updated to {}\n".format(current_x))
+    print("Converged after {} iterations.".format(iterations))
 
     return (current_x, fx1, iterations, grad_norms, delta_objectives)
 
@@ -105,8 +98,7 @@ def update(gradient, x, eta, i = None, t = None):
     if i is not None:
         assert t is not None
         grad = gradient(x, i)
-        # step = (eta + t) ** (-0.6) # adjust learning rate
-        # print("eta={}\n\n".format(step))
+
     else:
         grad = gradient(x)
 
@@ -117,35 +109,6 @@ def update(gradient, x, eta, i = None, t = None):
 ##################################
 # Estimations
 ##################################
-
-def central_difference(f, x, delta, stochI=None):
-    """
-    central_difference(f, x, delta) calculates an approximation of the gradient
-    at a given point, for a given function f. The central difference is defined as:
-
-        (f(x + delta/2) - f(x - delta/2)) / delta
-    """
-    n = x.shape[0]
-
-    delta_matrix = np.identity(n) * delta/2
-
-    est_gradient = []
-    for i in range(n):
-        ihat = delta_matrix[i].reshape(n)  # unit vector \hat{x}_i
-        new_x_pos = x + ihat
-        new_x_neg = x - ihat
-
-        if stochI is not None:
-            f_pos = f(new_x_pos, stochI)
-            f_neg = f(new_x_neg, stochI)
-        else:
-            f_pos = f(new_x_pos)
-            f_neg = f(new_x_neg)
-
-        est_gradient.append((f_pos - f_neg) / delta)
-    
-    # return (np.linalg.norm(est_gradient), est_gradient)
-    return np.array(est_gradient).reshape(n)
 
 def converge_grad(grad, threshold):
     """
