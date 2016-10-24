@@ -88,13 +88,12 @@ def train_svm(X, Y, C=float('inf'),
     i = np.argmin(np.absolute(alphas  - C/2))
 
     eps = 1e-6 * C
-    clipped_alphas = (alphas > eps) * (alphas < C - eps) * alphas
+    clipped_alphas = (alphas > eps) * alphas
 
     optimal_bias = Y[i] - (alphas * Y).T.dot(kernel_function(X, X[i]))
 
-
     if verbose:
-        optimal_weight = X.T.dot(alphas * Y)
+        optimal_weight = optimal_weight_vector(X, Y, alphas)
         print("index i of support vector for computation of b, alpha_i: {}" \
             .format(i, alphas[i]))
         print("optimal weight, bias: {}, {}" \
@@ -106,7 +105,12 @@ def train_svm(X, Y, C=float('inf'),
 
     return (clipped_alphas, predictor)
 
+def optimal_weight_vector(X, Y, alphas):
+    return X.T.dot(alphas * Y)
+
 def linear_kernel(z1, z2):
+    # TODO: support arbitrary shapes for z1, z2
+    # as long as they have the same final dimension
     return 1 + z1.dot(z2.T)
 
 def make_gaussian_rbf(bandwidth):
@@ -114,12 +118,11 @@ def make_gaussian_rbf(bandwidth):
     Make a Gaussian RBF kernel with given bandwidth.
     """
     def rbf_kernel(z1, z2):
+        # TODO: support arbitrary shapes for z1, z2
+        # as long as they have the same final dimension
         zz1 = np.atleast_2d(z1)
         zz2 = np.atleast_2d(z2)
         assert len(zz1.shape) == len(zz2.shape) == 2
-
-        # delta = z1 - z2
-        # return np.exp(- np.sum(np.atleast_2d(delta * delta), axis=1) / (2 * bandwidth ** 2))
 
         delta_tensor = np.expand_dims(zz1, axis=1) - np.expand_dims(zz2, axis=0)
         return np.exp(- np.sum(delta_tensor * delta_tensor, axis=2) / (2 * bandwidth ** 2))
