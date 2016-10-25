@@ -228,11 +228,11 @@ We show these best models on test data in Figure~\ref{fig:2-3-model-selection}
 along with the corresponding test errors.
 
 \begin{figure*}[h]
-   \centering
-   \includegraphics[width=3in]{img/p2-3-d1-c001/test.pdf}
-   \includegraphics[width=3in]{img/p2-3-d2-c1-rbf025/test.pdf}
-   \includegraphics[width=3in]{img/p2-3-d3-c100-rbf025/test.pdf}
-   \includegraphics[width=3in]{img/p2-3-d4-c1-rbf10/test.pdf}
+      \centering
+%   \includegraphics[width=3in]{img/p2-3-d1-c001/test.pdf}
+%   \includegraphics[width=3in]{img/p2-3-d2-c1-rbf025/test.pdf}
+%   \includegraphics[width=3in]{img/p2-3-d3-c100-rbf025/test.pdf}
+%   \includegraphics[width=3in]{img/p2-3-d4-c1-rbf10/test.pdf}
    \caption{Decision boundaries (with contours $t = \pm1$)
    on test data for best models produced by model selection.
    Of the 400 test data points in each data set,
@@ -321,6 +321,15 @@ We implemented the Pegasos algorithm and incorporated a $w_0$ term, such the mag
     w_0 = w_0 + \eta_t y^{(i)}.
 \end{equation}
 
+Now recall that we define the margin as $1/||w||$. Then, as we increase $\lambda$, the margin also increases.
+
+\begin{figure*}[h]
+   \centering
+	\includegraphics[width=3in]{img/3-2-margins.pdf}
+   \caption{Effect of changing $\lambda$ on margins}
+   \label{fig:3-2-margins}
+\end{figure*}
+
 \subsection{Kernelized Pegasos}
 
 We can extend the Pegasos algorithm to solve the following kernelized soft-SVM problem.
@@ -344,14 +353,14 @@ Given the support vector values $\alpha$, we can make predictions for new inputs
 
 We apply these various classifiers to classify the MNIST (handwriting digit) dataset into binary subsets of digits. Each MNIST image contains 28 by 28 pixels, represented as a flattened vector of length 784. Features in this dataset take on values in the interval [0, 255] inclusive, representing the grayscale luminescence of each pixel.
 
-We optionally normalized input pixel features to the range [-1, 1], so that an input vector $x$ is mapped to $2x/255-1$.
+We optionally normalized input pixel features to the range [-1, 1], so that an input vector $x$ is mapped to $2x/255-1$. This normalization marginally improved classification accuracy for the test set (figure \ref{fig:4-1-normalization}).
 
 \begin{figure*}[h]
    \centering
 	\includegraphics[width=3in]{img/4-1-normalization.pdf}
 	\includegraphics[width=3in]{img/4-1-normalization-train.pdf}
    \caption{Effect of pixel feature normalization on classification accuracy, for logistic regression and SVM classifiers. Will fix later}
-   \label{fig:2-3-gaussian-rbf}
+   \label{fig:4-1-normalization}
 \end{figure*}
 
 \end{multicols}
