@@ -15,6 +15,7 @@
 %\newwatermark*[allpages,color=gray!50,angle=45,scale=3,xpos=0,ypos=0]{DRAFT}
 
 \DeclareMathOperator{\sgn}{sgn}
+\DeclareMathOperator{\NLL}{NLL}
 \newcommand{\sind}[1]{^{(#1)}}
 
 \title{6.867: Problem Set 2}
@@ -31,15 +32,21 @@
 
 \section{Logistic Regression}
 
-We implemented logistic regression with $L_2$ regularization. Recall that the objective function for $L_2$ regularization is of the form
+We implemented logistic regression with $L_2$ regularization.
+Recall that the objective function for $L_2$ regularization takes the form
 \begin{equation}
-    E_{LR}(w, w_0) = \text{NLL}(w, w_0) + \lambda ||w||_2^2
+    E_{LR}(w, w_0) = \NLL(w, w_0) + \lambda ||w||_2^2
 \end{equation}
-where NLL is the logistic loss, when $y$ values are drawn from $\{+1, -1\}$.
+where NLL is the logistic loss, when $y$ values are $\pm 1$:
 \begin{equation}
     \text{NLL}(w, w_0) = \sum_i{\log(1+\exp(-y^{(i)}(wx^{(i)}+w_0)))}
 \end{equation}
-We tested our implementation against four datasets, each of size $insert$, where $X$ comprised of $n$ two-dimensional pairs and $y=\{y^{(1)}, y^{(2)}, \dots ,y^{(n)} | y^{(i)} \in \{+1, -1\}\}$. We observed that $||w||$ decreases monotonically when $\lambda=0$, but is penalized when $\lambda=1$ (figure \ref{fig:weight-regularization}). This is because the regularization term constrains the magnitude of $w$ [halp].
+We tested our implementation against four labeled datasets,
+each of size $insert$, % TODO
+with two-dimesional data points $x\sind{i}$ labeled by $y\sind{i} = \pm1$.
+We observed that $||w||$ decreases monotonically when $\lambda=0$,  % TODO what does this mean?
+but is penalized when $\lambda=1$ (Figure~\ref{fig:weight-regularization}).
+This is because the regularization term constrains the magnitude of $w$ [halp].
 
 \begin{figure*}
    \centering
@@ -48,14 +55,23 @@ We tested our implementation against four datasets, each of size $insert$, where
    \label{fig:weight-regularization}
 \end{figure*}
 
-We then compared the effects of $L_1$ and $L_2$ regularization with Sklearn's \texttt{Logistic Regression} module. Recall that the objective function for $L_1$ regularization is
+We then compared the effects of $L_1$ and $L_2$ regularization
+with Sklearn's \texttt{Logistic Regression} module.  % TODO fix
+Recall that the objective function for $L_1$ regularization is
 \begin{equation}
-    E_{LR}(w, w_0) = \text{NLL}(w, w_0) + \lambda ||w||_1
+    E_{LR}(w, w_0) = \NLL(w, w_0) + \lambda ||w||_1
 \end{equation}
 where $||w||_1 = \sum_{i=1}^n{|w_i|}$.
-We observed that $L_2$ generally produced more accurate classifications as $\lambda$ increased, while both resulted similar decision boundaries. For small values of $\lambda$, $L_2$ regularization resulted in smaller weights than $L_1$ regularization (figure \ref{fig:l1-l2}).
+We observed that $L_2$ generally produced
+more accurate classifications as $\lambda$ increased,
+while both resulted similar decision boundaries.
+For small $\lambda$,
+$L_2$ regularization resulted in smaller weights
+than $L_1$ regularization (figure \ref{fig:l1-l2}).
 
 We further tested both regularization methods against four datasets (including the first), each with similar forms of $X$ and $y$ inputs (figure \ref{fig:regularization-four}). Using separate training and validation sets, we determined the optimal regularizer and value of $\lambda$ for each dataset (table \ref{table:regularization-four}).
+
+% TODO and then?
 
 \begin{table*}
 \caption{Classification accuracy for logistic regression with $L_2$ and $L_1$ regularization. For each entry, the $L_2$ accuracy is followed by the $L_1$ accuracy. Also piazza says to use cross-validation / model selection stuff but idk what that is D: wasn't in class}
@@ -92,9 +108,9 @@ Recall that the soft-SVM dual optimization problem takes the form
         & \displaystyle\sum_{i=1}^n \alpha_i y\sind{i} = 0
     \end{array}
 \end{equation}
-for training data $x\sind{i}$ ($i=1, \dots, n$),
-with labels $y\sind i = \pm 1$.
-$C$ is a hyperparameter controlling the amount of slack we permit.
+for training data $x\sind{i}$
+labeled by $y\sind i = \pm 1$.
+Hyperparameter~$C$ controls the amount of slack we permit.
 Given a new data point $x$,
 we predict its label $y$ as
 \begin{equation}
@@ -203,6 +219,8 @@ We chose values of $C$ in
 
 % TODO
 % Report your results and answer the following questions:
+
+
 
 %(a) What happens to the geometric margin 1/|w| as C increases? Will this always happen as we increase C?
 Finally, we make some observations about hyperparameter~$C$.
