@@ -55,7 +55,7 @@ indeed, regularization constrains the magnitude of $w$ [halp].  % TODO more
 
 \begin{figure*}
    \centering
-   \includegraphics[width=3in]{figures/1-1-weights.pdf}
+   \includegraphics[width=3in]{img/1-1-weights.pdf}
    \caption{Effects of regularization on weight vector. I promise I'll replace this.}
    % TODO please replace
    \label{fig:weight-regularization}
@@ -230,9 +230,9 @@ We illustrate these findings in Figure~\ref{fig:2-3-gaussian-rbf}
 
 \begin{figure*}[h]
    \centering
-   \includegraphics[width=2.4in]{img/p2-3-d2-c1-rbf02/validate.pdf}
-   \includegraphics[width=2.4in]{img/p2-3-d2-c1-rbf06/validate.pdf}
-   \includegraphics[width=2.4in]{img/p2-3-d2-c1-rbf20/validate.pdf}
+%   \includegraphics[width=2.4in]{img/p2-3-d2-c1-rbf02/validate.pdf}
+%   \includegraphics[width=2.4in]{img/p2-3-d2-c1-rbf06/validate.pdf}
+%   \includegraphics[width=2.4in]{img/p2-3-d2-c1-rbf20/validate.pdf}
    \caption{SVM decision boundaries (with contours $t = \pm1$) on validation data for dataset 2, with $C = 1$ and Gaussian RBF kernels with bandwidths $\sigma=0.2,0.6,2.0$, in that order.}
    \label{fig:2-3-gaussian-rbf}
 \end{figure*}
@@ -322,12 +322,51 @@ and where the sum is taken over all validation data.
 
 \section{SVMs with Pegasos}
 
+While SVMs are effective and convenient to implement, large SVMs can be unwieldy to solve. Instead, we may consider solving the following soft-SVM using the Pegasos algorithm (primal estimated sub-gradient solver for SVM).
+\begin{equation}
+   \min_w{\f{\lambda}{2}||w||^2} + \f{1}{n}\sum_{i=1}^n{\max\{0,1-y_i(w^Tx_i)\}}
+\end{equation}
+The Pegasos algorithm stochastically updates our weight vector $w$ based on the following algorithm.
+
+% TODO
+
+We implemented the Pegasos algorithm and incorporated a $w_0$ term, such the magnitude of $w_0$ is not penalized. We update $w_0$ as
+\begin{equation}\label{eq:pegasos-svm}
+    w_0 = w_0 + \eta_t y^{(i)}.
+\end{equation}
+
+\subsection{Kernelized Pegasos}
+
+We can extend the Pegasos algorithm to solve the following kernelized soft-SVM problem.
+\begin{equation}
+   \min_w{\f{\lambda}{2}||w||^2} + \f{1}{n}\sum_{i=1}^n{\max\{0,1-y_i(w^T\phi(x_i))\}}
+\end{equation}
+We implemented the following algorithm to take in a Gram matrix, where entry $k_{i,j} = K(x^{(i)},x^{(j)}) = \phi(x^{(i)})\cdot\phi(x^{(j)})$. We did not incorporate a bias term.
+
+% TODO
+
+Given the support vector values $\alpha$, we can make predictions for new inputs $x$ as 
+\begin{equation}
+    \sum_j{a_j K(x^{(i)},x^{(j)}) < 1 }
+\end{equation}
+
 % % % % % % % % % %
 %    PROBLEM 4
 % % % % % % % % % %
 
 \section{MNIST Digit Recognition}
 
+We apply these various classifiers to classify the MNIST (handwriting digit) dataset into binary subsets of digits. Each MNIST image contains 28 by 28 pixels, represented as a flattened vector of length 784. Features in this dataset take on values in the interval [0, 255] inclusive, representing the grayscale luminescence of each pixel.
+
+We optionally normalized input pixel features to the range [-1, 1], so that an input vector $x$ is mapped to $2x/255-1$.
+
+\begin{figure*}[h]
+   \centering
+	\includegraphics[width=3in]{img/4-1-normalization.pdf}
+	\includegraphics[width=3in]{img/4-1-normalization-train.pdf}
+   \caption{Effect of pixel feature normalization on classification accuracy, for logistic regression and SVM classifiers. Will fix later}
+   \label{fig:2-3-gaussian-rbf}
+\end{figure*}
 
 \end{multicols}
 
