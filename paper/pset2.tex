@@ -414,7 +414,7 @@ The vector $\alpha$ may be sparse, with non-zero entries for support vectors (si
 \end{equation}
 
 We implemented the kernelized Pegasos algorithm with a Gaussian RBF kernel
-(as in Equation \ref{eq:2-2-gaussian-rbf}), given fixed $\lambda = 0.02$, varying the bandwidth with $\gamma = \{2^{-2},\dots,2^2\}$, and maximum number of epochs = 10000.
+(as in Equation \ref{eq:2-2-gaussian-rbf}), given fixed $\lambda = 0.02$ and maximum number of epochs = 10000. We vary the bandwidth with $\gamma = \{2^{-2},\dots,2^2\}$, where $\gamma = \f{1}{2\sigma^2}$.
 We observed that smaller values of $\gamma$ resulted in fewer support vectors.
 
 \begin{center}
@@ -431,7 +431,7 @@ Thus, the decision boundary becomes tighter as we decrease $\gamma$. We illustra
 	\includegraphics[width=2in]{img/3-2-margins/3-3-kernel-025.pdf}
 	\includegraphics[width=2in]{img/3-2-margins/3-3-kernel-1.pdf}
 	\includegraphics[width=2in]{img/3-2-margins/3-3-kernel-4.pdf}
-   \caption{Larger $\gamma$ increases risk of overfitting to data. On the test sets, classification errors were 28/200, 14/200, and 11/200, respectively.}
+   \caption{Larger $\gamma$ increases the fit to data. On the test sets, classification errors were 28/200, 14/200, and 11/200, respectively.}
    \label{fig:3-3-gamma}
 \end{figure*}
 
