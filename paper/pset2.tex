@@ -479,7 +479,7 @@ These images were generally very ambiguous
 explaining their misclassification.
 
 
-% TODO STUFF
+% TODO STUFF make some images
 
 
 \subsection{SVMs with RBF kernels}
@@ -515,81 +515,51 @@ too expensive to perform
 with our quadratic-programming-based SVM implementation.
 
 Comparing with our results from the previous section,
-we find that kernelizing our SVMs can improve results
+we find that kernelizing our SVMs can improve some results
 (as was the case in the 3/5 classification problem).
 In other cases, kernelization had little effect.
 We conjecture that this lack of improvement results from
 the underlying dataset being nearly linearly separable.
 
-
 \subsection{Pegasos and Quadratic Programming}
 
-<<<<<<< HEAD
-%Classifying MNIST positive [1] and negative [7] with method pegasos_digit
-%Converged after 1000000 iterations.
-%0 samples out of 400 classified wrong.
-%
-%Classifying MNIST positive [3] and negative [5] with method pegasos_digit
-%Converged after 1000000 iterations.
-%13 samples out of 400 classified wrong.
-%
-%Classifying MNIST positive [4] and negative [9] with method pegasos_digit
-%Converged after 1000000 iterations.
-%13 samples out of 400 classified wrong.
-%
-%Classifying MNIST positive [0, 2, 4, 6, 8] and negative [1, 3, 5, 7, 9] with method pegasos_digit
-%Converged after 1000000 iterations.
-%258 samples out of 2000 classified wrong.
-
-
-
-%This normalization marginally improved classification accuracy for the test set (figure \ref{fig:4-1-normalization}).
-
-%\begin{figure*}[h]
-%   \centering
-%	\includegraphics[width=3in]{img/4-1-normalization.pdf}
-%	\includegraphics[width=3in]{img/4-1-normalization-train.pdf}
-%   \caption{Effect of pixel feature normalization on classification accuracy, for logistic regression and SVM classifiers. Will fix later}
-%   \label{fig:4-1-normalization}
-%\end{figure*}
-=======
-We now run kernelized Pegasos (section~\ref{subsec:kernel-peg})
+We now run Pegasos (section~\ref{subsec:kernel-peg})
 on the same four classification problems as above.
-Our test set accuracies are below:  % TODO use actual numbers
-\begin{center}    % TODO use actualnumbers
+Using the optimal $\lambda$ and normalized data, our test set accuracies
+are below: 
+\begin{center} 
 \begin{tabular}{|c|c|c|c|c|}
 \hline
-+ & - & $param_1$ & $param_2$ & Pegasos error \\\hline
-1 & 7 &30 & 10 & 4/300 \\
-3 & 5 &10 & 100 & 5/300\\
-4 & 9 & 30 & 10 & 16/300\\
-even & odd & - & - & - \\\hline
++ & - & $\lambda$ & epochs & Pegasos error \\\hline
+1 & 7 & 0.25 & 100 000 & 2/300 \\
+3 & 5 & 0.5 & 100 000 & 20/300\\
+4 & 9 & 2 & 100 000 & 24/300\\
+even & odd & 1 & 500 000 & 240/1500 \\\hline
 \end{tabular}
 \end{center}
 
-BLAH BLAH comparing accuracies % TODO
-
-Finally, we consider the runtimes of
+We see that Pegasos achieves accuracy as our SVM classifier, given enough epochs.
+Thus, we should consider the runtimes of
 our quadratic-programming based approach and Pegasos.
 For the 1/7 classification problem,
-using Pegasos parameter $\lambda = 123123123$ with $12123$ epochs
-% TODO change these numbers ^
+using Pegasos parameter $\lambda = 0.25$ with $100 000$ epochs
 (chosen because they produced comparably accurate results as our QP approach),
 the training times of the two approaches increased as:
 \begin{center}
     \begin{tabular}{|c|c|c|}\hline
         training set size & QP time (s) & Pegasos time (s) \\\hline
-        200 & 18.1 & \\
-        300 & 30.6 & \\
-        400 & 46.3 & \\
-        500 & 67.8 & \\\hline
+        200 & 18.1 & 2.1\\
+        300 & 30.6 & 2.1\\
+        400 & 46.3 & 2.0\\
+        500 & 67.8 & 2.1\\\hline
     \end{tabular}
 \end{center}
-% TODO fill in for pegasos
 
-% summarize and explain findings
-
->>>>>>> 63cea8e3329c87a999931d74990337ec6f9bd62b
+We see that while the QP runtime grows rapidly as training set size increases, the 
+Pegasos runtime largely remains fast and constant. Since the Pegasos algorithm stochastically 
+updates on single vectors, increasing the training set does not affect how fast the algorithm 
+trains. Therefore, stochastic optimization methods are more optimal in runtime for
+large datasets.
 
 \end{multicols}
 
