@@ -382,12 +382,10 @@ The regularization constant $\lambda$ limits the magnitude of $w$,
 so as we increase $\lambda$, the margin grows.
 We show this effect empirically in Figure~\ref{fig:3-2-margins} for a sample dataset.
 
-% TODO
-
 \begin{figure*}[t]
    \centering
-	\includegraphics[width=3in]{img/3-2-margins.pdf}
-   \caption{Effect of changing $\lambda$ on margins}
+	\includegraphics[width=2.5in]{img/3-2-margins.pdf}
+   \caption{Increasing $\lambda$ penalizes $||w||$ and increases margins, since we define margin as $||w||\inv$.}
    \label{fig:3-2-margins}
 \end{figure*}
 
@@ -426,7 +424,16 @@ $\gamma$ & $2^{-2}$ & $2^{-1}$ & 1 & 2 & 4\\ \hline
 SV & 1/400 & 1/400 & 2/400 & 45/400 & 100/400 \\ \hline
 \end{tabular}
 \end{center}
-Thus, the decision boundary becomes tighter as we decrease $\gamma$.
+Thus, the decision boundary becomes tighter as we decrease $\gamma$. We illustrate this effect in Figure~\ref{fig:3-3-gamma} for a sample dataset.
+
+\begin{figure*}[t]
+   \centering
+	\includegraphics[width=2in]{img/3-2-margins/3-3-kernel-025.pdf}
+	\includegraphics[width=2in]{img/3-2-margins/3-3-kernel-1.pdf}
+	\includegraphics[width=2in]{img/3-2-margins/3-3-kernel-4.pdf}
+   \caption{Larger values of $\gamma$ decrease margins.}
+   \label{fig:3-3-gamma}
+\end{figure*}
 
 % % % % % % % % % %
 %    PROBLEM 4
@@ -475,7 +482,7 @@ for either model.
 
 We also manually inspected some of the classification errors, as illustrated 
 in Figure \ref{fig:4-1-wrong}.
-These images were generally very ambiguous, even to the human eye,
+For example, a roundish 4 may look like a 9. These images were generally very ambiguous, even to the human eye,
 which explains their misclassification.
 
 \begin{figure*}[t]
