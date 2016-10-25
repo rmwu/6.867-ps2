@@ -2,9 +2,6 @@ import math
 import numpy as np
 import cvxopt
 
-def elementwise_kernel(kernel, vectors, point):
-    return np.array([kernel(vector, point) for vector in vectors])
-
 def train_svm(X, Y, C=float('inf'),
               kernel_func=None,
               kernel_mat=None,
@@ -87,7 +84,7 @@ def train_svm(X, Y, C=float('inf'),
     # instead, we pick the closest to C/2, which should solve our woes
     i = np.argmin(np.absolute(alphas  - C/2))
 
-    eps = 1e-6 * C
+    eps = 1e-5 * C
     clipped_alphas = (alphas > eps) * alphas
 
     optimal_bias = Y[i] - (alphas * Y).T.dot(kernel_function(X, X[i]))
@@ -111,7 +108,7 @@ def optimal_weight_vector(X, Y, alphas):
 def linear_kernel(z1, z2):
     # TODO: support arbitrary shapes for z1, z2
     # as long as they have the same final dimension
-    return 1 + z1.dot(z2.T)
+    return z1.dot(z2.T)
 
 def make_gaussian_rbf(bandwidth):
     """
