@@ -17,24 +17,6 @@ def train_svm(X, Y, C=float('inf'),
     kernel_mat: the kernel matrix (should be n x n)
 
     Do not specify both a kernel function and kernel matrix.
-
-    The C-SVM dual optimization problem:
-
-    minimize ( 0.5 * sum_{i,j} y^i y^j k(x^i, x^j) alpha_i alpha_j ) + sum_{i} alpha_i
-    subject to 0 <= alpha_i <= C (for all i)
-    and sum_{i} y^i alpha_i = 0
-
-    The cvxopt matrices are thus
-
-    P_ij = k(x^i, x^j) y^i y^j
-    P = (Y.dot(Y.T)) * kernel_matrix
-    q = ones
-
-    G = (-1 * identity) stacked on top of identity
-    h = 0s, then C
-
-    A = Y.T
-    b = 0
     """
 
     # check preconditions
@@ -105,6 +87,13 @@ def train_svm(X, Y, C=float('inf'),
 def optimal_weight_vector(X, Y, alphas):
     return X.T.dot(alphas * Y)
 
+def errors(X, Y, predictor):
+    """
+    Given a predictor and a dataset X, Y return an array with values 0/1,
+    where 1 signifies a prediction error.
+    """
+    return np.not_equal(Y.T, np.sign(predictor(X)))
+
 def linear_kernel(z1, z2):
     # TODO: support arbitrary shapes for z1, z2
     # as long as they have the same final dimension
@@ -133,8 +122,5 @@ def main():
     alphas, predictor = train_svm(toy_X, toy_Y, float('inf'))
     print("alphas: {}".format(alphas))
 
-
 if __name__ == '__main__':
     main()
-
-

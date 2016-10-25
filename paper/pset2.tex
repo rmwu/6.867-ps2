@@ -212,11 +212,33 @@ and with Gaussian RBF kernels
 \begin{equation}
     k(x, x') = \exp\lt(-\f{|x - x'|^2}{2\sigma^2}\rt)
 \end{equation}
-with varying bandwidth~$\sigma$ on the same four datasets as before.  % TODO how did sigma vary?
-We chose values of $C$ in
+with bandwidths~$\sigma=0.25,0.5,1.0,2.0$ on the same four datasets as before.
+We took
 \[
-    C \in \{0.01, 0.1, 1, 10, 100\}
+    C \in \{0.01, 0.1, 1, 10, 100\}.
 \]
+
+In particular, we performed model selection as follows:
+within both the family of linear SVMs (parametrized by $C$)
+and the family of RBF SVMs (parametrized by $C$ and $\sigma$).
+we took the hyperparameters that produced the best model by validation error
+(using misclassification as our error metric).
+Finally, we took the best of the best two models (again by validation error).
+We show these best models on test data in Figure~\ref{fig:2-3-model-selection}
+along with the corresponding test errors.
+
+\begin{figure*}[h]
+   \centering
+   \includegraphics[width=3in]{img/p2-3-d1-c001/test.pdf}
+   \includegraphics[width=3in]{img/p2-3-d2-c1-rbf025/test.pdf}
+   \includegraphics[width=3in]{img/p2-3-d3-c100-rbf025/test.pdf}
+   \includegraphics[width=3in]{img/p2-3-d4-c1-rbf10/test.pdf}
+   \caption{Decision boundaries (with contours $t = \pm1$)
+   on test data for best models produced by model selection.
+   Of the 400 test data points in each data set,
+   our best model for each made 0, 12, 7, 17 errors, respectively.}
+   \label{fig:2-3-gaussian-rbf}
+\end{figure*}
 
 In the linearly separable case, with a linear kernel,
 we found that increasing $C$ led to tighter margins and fewer support vectors.
@@ -226,7 +248,16 @@ Gaussian kernels worked well when we chose bandwidth~$\sigma$
 commensurate to the size of the spatial features of the dataset.
 Excessively small $\sigma$ created decision boundaries that overfit to training data.
 On the other hand, models with $\sigma$ too large were unable to discern tight structure.
-We illustrate these findings in Figure~\ref{fig:2-3-gaussian-rbf}
+We illustrate these findings in Figure~\ref{fig:2-3-gaussian-rbf}.
+
+In general,
+Gaussian kernel SVMs have lower bias,
+but potentially higher variance,
+as one would expect, since using RBF kernels is equivalent to
+performing mapping the raw data into an infinite-dimensional feature space.
+We see this lower in bias qualitatively
+in the larger number of support vectors
+and in the tighter shapes of the decision boundaries.
 
 \begin{figure*}[h]
    \centering
@@ -237,44 +268,6 @@ We illustrate these findings in Figure~\ref{fig:2-3-gaussian-rbf}
    \label{fig:2-3-gaussian-rbf}
 \end{figure*}
 
-
-% TODO phrase as prose:
-\begin{itemize}
-    \item
-    Gaussian kernels produced better classification accuracy, but there were more support vectors.
-    Intuition: in higher dimensions, supporting hyperplanes rest on more support vectors.
-    \item
-    For linearly inseparable data, and linear kernel, changing $C$ didn't change much. (dataset 2)
-    \item
-    small bandwidth lets you pick out fine structure (dataset 2, sigma = 0.5, C = 100)
-    \item
-    Gaussian kernels don't overfit super-easily (unless you pick small bandwidth)
-\end{itemize}
-
-%\begin{figure*}
-%\begin{minipage}[b]{.5\textwidth}
-%      \begin{subfigure}{.5\textwidth} 
-%        \centering
-%        \pic{40pt}
-%        % Add \par\vspace*{20pt} here and...
-%        \caption{Subfig1}\label{fig:2a}
-%      \end{subfigure}%
-%      \begin{subfigure}{.5\textwidth} 
-%        \centering
-%        \pic{40pt}
-%        % ...here to lower the subcaptions and...
-%        \caption{Subfig2}\label{fig:2b}
-%      \end{subfigure} \par \vspace*{20pt} % ...remove them from here
-%      \caption{Another figure}\label{fig:2}
-%    \end{minipage}%
-%    \end{figure*}
-
-% TODO
-% Report your results and answer the following questions:
-
-
-
-%(a) What happens to the geometric margin 1/|w| as C increases? Will this always happen as we increase C?
 We make some observations about hyperparameter~$C$.
 From Equation~\ref{eq:soft-svm-dual},
 larger $C$ corresponds to less tolerance for slack.
@@ -284,19 +277,11 @@ so we expect increasing $C$ shrinks the geometric margin,
 as our experiments confirm.
 % TODO illustrate?
 
-% (b) What happens to the number of support vectors as C increases?
 Consequently, there are fewer support vectors with large $C$:
 the margin becomes tighter,
 and the model grows increasingly averse to margin errors,
 which make up the bulk of the support vectors for small $C$.
 
-%(c)
-%The value of C will typically change the resulting classifier
-%and therefore also affects the accuracy on test examples.
-%Why would maximizing the geometric margin 1/|w|
-%on the training set
-%not be an appropriate criterion for selecting C?
-%Is there an alternative criterion that we could use for this purpose?
 The size of the margin
 is not a good metric for choosing $C$,
 as can make the margin arbitrarily large
@@ -314,6 +299,7 @@ by our classifier on a validation dataset:
 \end{equation}
 where $t$ is the prediction function in Equation~\ref{eq:soft-svm-predict}
 and where the sum is taken over all validation data.
+We could also use classification error on the validation set.
 
 
 % % % % % % % % % %
