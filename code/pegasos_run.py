@@ -34,7 +34,8 @@ def pegasos(X, y, lambdaa, max_cycles):
                 w0 = w[0]
                 w = (1-eta*lambdaa)*w
                 w[0] = w0
-    print("Updated weight to {} after {} iterations.".format(w, t))
+    # print("Updated weight to {} after {} iterations.".format(w, t))
+    print("Converged after {} iterations.".format(t))
     return w
 
 def pegasos_kernalized(X, y, lambdaa, K, max_cycles):

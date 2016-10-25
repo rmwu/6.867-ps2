@@ -23,7 +23,7 @@ def nll(W, X, y, lambdaa):
     n, m = X.shape
     loss = 0
 
-    for i in range(m):
+    for i in range(n):
         # scalar
         wTx = W.T.dot(X[i])
         summand = y[i] * math.log(s(wTx)) + (1-y[i]) * math.log(1-s(wTx))
@@ -57,12 +57,12 @@ def lr_run(w0, X, y, lambdaa):
     """
     obj = lambda w : nll(w, X, y, lambdaa)
     gradient = lambda w : del_nll(w, X, y, lambdaa)
-    eta = 0.0001
-    threshold = 0.000001
+    eta = 0.001
+    threshold = 0.0001
 
     results = gd.gradient_descent(w0, obj, gradient, eta, threshold)
     w = results[0]
-    print("Converged to {} from {}.".format(w, w0))
+    # print("Converged to {} from {}.".format(w, w0))
     
     return results
     
