@@ -1,6 +1,8 @@
 import sys
 import argparse
 
+import time
+
 import numpy as np
 import matplotlib.pyplot as plt
 
@@ -45,6 +47,7 @@ def main():
     parser.add_argument("--sigma", nargs="+", type=float)
     parser.add_argument("--C", nargs="+", type=float)
     parser.add_argument("--show_misclassified", action="store_true")
+    parser.add_argument("--training_size", type=int)
     args = parser.parse_args()
 
     positive = args.pos
@@ -56,7 +59,10 @@ def main():
         ptest = []
         for d in digit_subset:
             examples = np.loadtxt("data/mnist_digit_{}.csv".format(d)).tolist()
-            ptrain += examples[:200]
+            if args.training_size:
+                ptrain += examples[:args.training_size//2]
+            else:
+                ptrain += examples[:200]
             pval += examples[200:350]
             ptest += examples[350:500]
 
@@ -90,6 +96,8 @@ def main():
                                        kernel_func=kernel_func,)
 
     if args.rbf:
+        start_time = time.time()
+
         bandwidths = args.sigma
         rbf_optimization_results = [optimize(svm.make_gaussian_rbf(sigma)) for sigma in bandwidths]
         rbf_val_errors = [x[1] for x in rbf_optimization_results]
@@ -102,6 +110,7 @@ def main():
             .format(best_rbf_c, best_sigma,
                 rbf_val_error, len(partitioned[1][1]),
                 rbf_test_error, len(partitioned[2][1])))
+        print("Took {} seconds".format(time.time() - start_time))
     else:
         best_lin_c, lin_val_error, lin_test_error, best_pred = \
             optimize(svm.linear_kernel)
