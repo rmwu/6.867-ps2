@@ -119,21 +119,9 @@ dataset & $\lambda$	& regularization		 & accuracy \\\hline
         4	& 1.0 & $L_1$ & 0.5 \\\hline
 \end{tabular}
 \end{center}
-%
-%\begin{table*}
-%    \caption{Classification performance on testing datasets.}
-%    % TODO please fix this
-%    \centering
-%    \begin{tabular}{|c||c|c|c|}
-%        \hline
-%        dataset & $\lambda$	& regularization		 & accuracy \\\hline
-%        1	&  1.0 & L2 & 1.0\\
-%        2	& 4 & L1 & 0.81 \\
-%        3	& 4 & L1 & 0.975 \\
-%        4	& 1.0 & L2 & 0.5 \\\hline
-%    \end{tabular}
-%    \label{table:1-3-optimal}
-%\end{table*}
+
+% TODO discuss results
+
 
 % % % % % % % % % %
 %    PROBLEM 2
@@ -498,7 +486,7 @@ which explains their misclassification.
    \includegraphics[width=1in]{img/4-1-wrong/4-1-wrong-247.pdf} \hspace{-.25in}
    \includegraphics[width=1in]{img/4-1-wrong/4-1-wrong-259.pdf} \hspace{-.25in}
    \includegraphics[width=1in]{img/4-1-wrong/4-1-wrong-281.pdf} \hspace{-.25in}
-   \caption{Misclassified images. The top row contains images all labeled as 4, 
+   \caption{Misclassified images. The top row contains images all labeled as 4 (but misclassified as 9), 
    while the bottom row contains images labeled as 9.}
    \label{fig:4-1-wrong}
 \end{figure*}
@@ -544,7 +532,32 @@ the underlying dataset being nearly linearly separable.
 
 \subsection{Pegasos and Quadratic Programming}
 
-We now run Pegasos (section~\ref{subsec:kernel-peg})
+%Classifying MNIST positive [1] and negative [7] with method pegasos_digit
+%Converged after 1000000 iterations.
+%0 samples out of 400 classified wrong.
+%
+%Classifying MNIST positive [3] and negative [5] with method pegasos_digit
+%Converged after 1000000 iterations.
+%13 samples out of 400 classified wrong.
+%
+%Classifying MNIST positive [4] and negative [9] with method pegasos_digit
+%Converged after 1000000 iterations.
+%13 samples out of 400 classified wrong.
+%
+%Classifying MNIST positive [0, 2, 4, 6, 8] and negative [1, 3, 5, 7, 9] with method pegasos_digit
+%Converged after 1000000 iterations.
+%258 samples out of 2000 classified wrong.
+
+
+%\begin{figure*}[h]
+%   \centering
+%	\includegraphics[width=3in]{img/4-1-normalization.pdf}
+%	\includegraphics[width=3in]{img/4-1-normalization-train.pdf}
+%   \caption{Effect of pixel feature normalization on classification accuracy, for logistic regression and SVM classifiers. Will fix later}
+%   \label{fig:4-1-normalization}
+%\end{figure*}
+
+We now run kernelized Pegasos (section~\ref{subsec:kernel-peg})
 on the same four classification problems as above.
 Using the optimal $\lambda$ and normalized data, our test set accuracies
 are below: 
