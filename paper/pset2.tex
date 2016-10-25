@@ -45,47 +45,57 @@ We tested our implementation against four labeled datasets,
 each of size $insert$, % TODO
 with two-dimesional data points $x\sind{i}$ labeled by $y\sind{i} = \pm1$.
 We observed that $||w||$ decreases monotonically when $\lambda=0$,  % TODO what does this mean?
-but is penalized when $\lambda=1$ (Figure~\ref{fig:weight-regularization}).
-This is because the regularization term constrains the magnitude of $w$ [halp].
+but is penalized when $\lambda=1$ (Figure~\ref{fig:weight-regularization});
+indeed, regularization constrains the magnitude of $w$ [halp].  % TODO more
 
 \begin{figure*}
    \centering
    \includegraphics[width=3in]{figures/1-1-weights.pdf}
    \caption{Effects of regularization on weight vector. I promise I'll replace this.}
+   % TODO please replace
    \label{fig:weight-regularization}
 \end{figure*}
 
-We then compared the effects of $L_1$ and $L_2$ regularization
-with Sklearn's \texttt{Logistic Regression} module.  % TODO fix
-Recall that the objective function for $L_1$ regularization is
+We then compared the effects of $L_1$ and $L_2$ regularization.
+Recall that the objective function with $L_1$ regularization is
 \begin{equation}
     E_{LR}(w, w_0) = \NLL(w, w_0) + \lambda ||w||_1
 \end{equation}
 where $||w||_1 = \sum_{i=1}^n{|w_i|}$.
-We observed that $L_2$ generally produced
-more accurate classifications as $\lambda$ increased,
-while both resulted similar decision boundaries.
+$L_2$ regularization generally produced
+more accurate classifications as $\lambda$ increased.
+Both regularization schemes produced similar decision boundaries.
 For small $\lambda$,
 $L_2$ regularization resulted in smaller weights
 than $L_1$ regularization (figure \ref{fig:l1-l2}).
 
-We further tested both regularization methods against four datasets (including the first), each with similar forms of $X$ and $y$ inputs (figure \ref{fig:regularization-four}). Using separate training and validation sets, we determined the optimal regularizer and value of $\lambda$ for each dataset (table \ref{table:regularization-four}).
+We further tested both regularization methods against four datasets (including the first),
+each with similar forms of $X$ and $y$ inputs (figure \ref{fig:regularization-four}).
+% TODO explain datasets
+Using separate training and validation sets,
+we determined the optimal regularizer and value of $\lambda$
+for each dataset (table \ref{table:regularization-four}).
 
 % TODO and then?
 
 \begin{table*}
-\caption{Classification accuracy for logistic regression with $L_2$ and $L_1$ regularization. For each entry, the $L_2$ accuracy is followed by the $L_1$ accuracy. Also piazza says to use cross-validation / model selection stuff but idk what that is D: wasn't in class}
-\centering
-\begin{tabular}{|c||c|c|c|c|c|c|c|}
-\hline
-\backslashbox{data}{$\lambda$} & 0.125		& 0.25		 & 0.5	   & 1 & 2 & 4 & 8 \\\hline
-1		&  \color{red}1.0, 1.0 &  \color{red}1.0, 1.0 & \color{red}1.0, 1.0 &  \color{red}1.0, 1.0 &   \color{red}1.0, 1.0  & 1.0, 0.995 & 1.0, 0.995 \\
-2	& 0.805, 0.805 & 0.805, 0.805 &0.805, 0.805 & 0.805, 0.805 &  0.805,  \color{red}0.81  &  \color{red}0.81, 0.81 &  \color{red}0.81, 0.81 \\
-3	& 0.955, 0.95 & 0.96, 0.955 & 0.965, 0.955 & 0.97, 0.955 & 0.97, 0.965 &  0.97,  \color{red}0.975  & 0.97, 0.97\\
-4	& 0.4975,  \color{red}0.5 & 0.4975,  \color{red}0.5& 0.4975,  \color{red}0.5& 0.4975,  \color{red}0.5& 0.4975,  \color{red}0.5& 0.4975,  \color{red}0.5& 0.4975,  \color{red}0.5 \\\hline
-\end{tabular}
-\label{table:regularization-four}
+    \caption{Classification accuracy for logistic regression with $L_2$ and $L_1$ regularization.
+    For each entry, the $L_2$ accuracy is followed by the $L_1$ accuracy.
+    Also piazza says to use cross-validation / model selection stuff
+    but idk what that is D: wasn't in class}
+    % TODO please fix this
+    \centering
+    \begin{tabular}{|c||c|c|c|c|c|c|c|}
+        \hline
+        \backslashbox{data}{$\lambda$} & 0.125		& 0.25		 & 0.5	   & 1 & 2 & 4 & 8 \\\hline
+        1	&  \color{red}1.0, 1.0 &  \color{red}1.0, 1.0 & \color{red}1.0, 1.0 &  \color{red}1.0, 1.0 &   \color{red}1.0, 1.0  & 1.0, 0.995 & 1.0, 0.995 \\
+        2	& 0.805, 0.805 & 0.805, 0.805 &0.805, 0.805 & 0.805, 0.805 &  0.805,  \color{red}0.81  &  \color{red}0.81, 0.81 &  \color{red}0.81, 0.81 \\
+        3	& 0.955, 0.95 & 0.96, 0.955 & 0.965, 0.955 & 0.97, 0.955 & 0.97, 0.965 &  0.97,  \color{red}0.975  & 0.97, 0.97\\
+        4	& 0.4975,  \color{red}0.5 & 0.4975,  \color{red}0.5& 0.4975,  \color{red}0.5& 0.4975,  \color{red}0.5& 0.4975,  \color{red}0.5& 0.4975,  \color{red}0.5& 0.4975,  \color{red}0.5 \\\hline
+    \end{tabular}
+    \label{table:regularization-four}
 \end{table*}
+% TODO these seem to belong in two separate tables
 
 % % % % % % % % % %
 %    PROBLEM 2
@@ -216,6 +226,10 @@ We chose values of $C$ in
 \[
     C \in \{0.01, 0.1, 1, 10, 100\}
 \]
+
+In the linearly separable case, with a linear kernel,
+we found that increasing $C$ led to tighter margins and fewer support vectors.
+The model made no misclassifications on the validation data.
 
 % TODO
 % Report your results and answer the following questions:
