@@ -47,12 +47,13 @@ where NLL is the logistic loss, when $y$ values are $\pm 1$:
 \begin{equation}
     \text{NLL}(w, w_0) = \sum_i{\log(1+\exp(-y^{(i)}(wx^{(i)}+w_0)))}
 \end{equation}
-We tested our implementation against four labeled datasets,
-each of size $insert$, % TODO
-with two-dimesional data points $x\sind{i}$ labeled by $y\sind{i} = \pm1$.
-We observed that $||w||$ decreases monotonically when $\lambda=0$,  % TODO what does this mean?
-but is penalized when $\lambda=1$ (Figure~\ref{fig:weight-regularization});
-indeed, regularization constrains the magnitude of $w$ [halp].  % TODO more
+We minimized the objective function using standard gradient descent methods, with the gradient of $E_{LR}$ with respect to $w$ as
+\begin{equation}
+    d E_{LR} / d{w} = \sum_{i=1}^n(s(w^tx^{(i)})-y^{(i)})x^{(i)} - 2\lambda w
+\end{equation}
+where $s(x) = 1/(1+e^{-x})$, the sigmoid function.
+
+We tested our implementation against four labeled datasets, each with 400 training samples, 200 validation samples, and 200 testing samples. The data consisted of two-dimensional vectors $x\sind{i}$ labeled by $y\sind{i} = \pm1$. We observed that $||w||$ decreases, eventually converging, over time. When $\lambda = 1$, $||w||$ is penalized, we see that there is less fluctuation in $||w||$ (Figure~\ref{fig:weight-regularization}). However, we also noticed that the exact shift in $||w||$ was quite sensitive to changes in initial guess.
 
 \begin{figure*}
    \centering
@@ -62,33 +63,39 @@ indeed, regularization constrains the magnitude of $w$ [halp].  % TODO more
    \label{fig:weight-regularization}
 \end{figure*}
 
+\begin{figure*}
+   \centering
+   \includegraphics[width=3in]{img/1-3-1.pdf}
+   \includegraphics[width=3in]{img/1-3-2.pdf}
+   \includegraphics[width=3in]{img/1-3-3.pdf}
+   \includegraphics[width=3in]{img/1-3-4.pdf}
+   \caption{Decision boundaries from $L_2$ and $L_1$ normalization. Green is $L_1$, red is $L_2$. Datasets 1 and 3 are more or less separable, while datasets 2 and 4 are adverse examples.}
+   % TODO please replace
+   \label{fig:1-3-boundaries}
+\end{figure*}
+
 We then compared the effects of $L_1$ and $L_2$ regularization.
 Recall that the objective function with $L_1$ regularization is
 \begin{equation}
     E_{LR}(w, w_0) = \NLL(w, w_0) + \lambda ||w||_1
 \end{equation}
-where $||w||_1 = \sum_{i=1}^n{|w_i|}$.
+where $||w||_1 = \sum_{i=1}^n{|w_i|}$. 
 $L_2$ regularization generally produced
-more accurate classifications as $\lambda$ increased.
-Both regularization schemes produced similar decision boundaries.
+more accurate classifications as $\lambda$ increased to large values.
+However, both regularization schemes produced similar decision boundaries (Figure \ref{fig:1-3-boundaries}).
 For small $\lambda$,
 $L_2$ regularization resulted in smaller weights
-than $L_1$ regularization (figure \ref{fig:l1-l2}).
+than $L_1$ regularization, since the magnitude of $w$ is penalized more. % (figure \ref{fig:l1-l2}).
 
-We further tested both regularization methods against four datasets (including the first),
-each with similar forms of $X$ and $y$ inputs (figure \ref{fig:regularization-four}).
+After training, we used our validation set to select the optimal parameters for each dataset (Table \ref{table:regularization-four}). We noticed that some datasets did not have a unique optimal parameter; for these, we arbitrarily selected one. These values were then to obtain the performance on our test sets (Table \ref{table:1-3-optimal}).
+
 % TODO explain datasets
-Using separate training and validation sets,
-we determined the optimal regularizer and value of $\lambda$
-for each dataset (table \ref{table:regularization-four}).
 
 % TODO and then?
 
 \begin{table*}
     \caption{Classification accuracy for logistic regression with $L_2$ and $L_1$ regularization.
-    For each entry, the $L_2$ accuracy is followed by the $L_1$ accuracy.
-    Also piazza says to use cross-validation / model selection stuff
-    but idk what that is D: wasn't in class}
+    For each entry, the $L_2$ accuracy is followed by the $L_1$ accuracy. Some datasets contained multiple ``optimal'' models.}
     % TODO please fix this
     \centering
     \begin{tabular}{|c||c|c|c|c|c|c|c|}
@@ -100,6 +107,21 @@ for each dataset (table \ref{table:regularization-four}).
         4	& 0.4975,  \color{red}0.5 & 0.4975,  \color{red}0.5& 0.4975,  \color{red}0.5& 0.4975,  \color{red}0.5& 0.4975,  \color{red}0.5& 0.4975,  \color{red}0.5& 0.4975,  \color{red}0.5 \\\hline
     \end{tabular}
     \label{table:regularization-four}
+\end{table*}
+
+\begin{table*}
+    \caption{Classification performance on testing datasets.}
+    % TODO please fix this
+    \centering
+    \begin{tabular}{|c||c|c|c|}
+        \hline
+        dataset & $\lambda$	& regularization		 & accuracy \\\hline
+        1	&  1.0 & L2 & 1.0\\
+        2	& 4 & L1 & 0.81 \\
+        3	& 4 & L1 & 0.975 \\
+        4	& 1.0 & L2 & 0.5 \\\hline
+    \end{tabular}
+    \label{table:1-3-optimal}
 \end{table*}
 % TODO these seem to belong in two separate tables
 
@@ -330,7 +352,17 @@ using the Pegasos algorithm
 \begin{equation}
    \min_w \lt( \f{\lambda}{2}||w||^2 + \f{1}{n}\sum_{i=1}^n{\max\{0,1-y_i(w^Tx_i)\}} \rt)
 \end{equation}
-The Pegasos algorithm stochastically updates our weight vector $w$ based on the following algorithm.
+
+This problem is equivalent to C-SVM, when $C= \f{1}{n\lambda}$. Given a regularization constant $\lambda$ and a maximum number of ``epochs,'' the Pegasos algorithm stochastically updates our weight vector $w$ as follows.
+\begin{enumerate}
+\item Initialize $t$ and $w_0$ to 0.
+\item At each iteration, increment $t$ and set a decaying step size $\eta_t = 1/(t\lambda)$.
+\item If $y_i(w_t^Tx_i)<1$, then $w_{t+1}\leftarrow(1-\eta_t\lambda)w_t+\eta_ty_ix_i$. Else,  $w_{t+1}\leftarrow(1-\eta_t\lambda)w_t$.
+\item Repeat until $t$ reaches the maximum number of epochs.
+\end{enumerate}
+We implemented the Pegasos algorithm and incorporated a bias term with a corresponding column of 1s in $X$. The bias $w_0$ is not penalized by regularization, so we update $w_0$ as $w_0 = w_0 + \eta_t y_i$.
+
+Now recall that we define the margin as $1/||w||$. The regularization constant $\lambda$ limits the magnitude of $w$, so as we increase $\lambda$, $||w||$ decreases, and margin increases. This effect can be seen empirically in Figure \ref{fig:3-2-margins}.
 
 % TODO
 
@@ -340,8 +372,6 @@ We update $w_0$ as
     w_0 = w_0 + \eta_t y^{(i)}.
 \end{equation}
 % TODO what is \eta_t
-
-Now recall that we define the margin as $1/||w||$. Then, as we increase $\lambda$, the margin also increases.
 
 \begin{figure*}[h]
    \centering
@@ -357,10 +387,17 @@ to solve the following kernelized soft-SVM problem:
 \begin{equation}
    \min_w{\f{\lambda}{2}||w||^2} + \f{1}{n}\sum_{i=1}^n{\max\{0,1-y_i(w^T\phi(x_i))\}}
 \end{equation}
-We implemented the following algorithm to take in a Gram matrix, where entry $k_{ij} = K(x^{(i)},x^{(j)}) = \phi(x^{(i)})\cdot\phi(x^{(j)})$.
-We did not incorporate a bias term.
 
-% TODO
+The following kernelized Pegasos takes in a Gram matrix, where entry $k_{i,j} = K(x^{(i)},x^{(j)}) = \phi(x^{(i)})\cdot\phi(x^{(j)})$.
+\begin{enumerate}
+\item Initialize $t$ and $\alpha_{t=0}$ to 0.
+\item At each iteration, increment $t$ and set a decaying step size $\eta_t = 1/(t\lambda)$.
+\item If $y_i(\sum_j{\alpha_jK(x_j,x_i)})<1$, then $\alpha_{i}\leftarrow(1-\eta_t\lambda)\alpha_i+\eta_ty_i$. Else,  $\alpha_{i}\leftarrow(1-\eta_t\lambda)\alpha_i$.
+\item Repeat until $t$ reaches the maximum number of epochs.
+\end{enumerate}
+Note that the primary difference between the kernelized Pegasos and the original version is that in place of a $d$ dimensional $w_t$, we now store $\alpha_i$ for each training instance, and in place of $x_i$, we apply some transformation $\phi(x_i)$.
+
+We implemented the kernelized Pegasos algorithm with a Gaussian kernel, given fixed $\lambda = 0.02$ and varying bandwidths $\gamma = \{2^{-2},\dots,2^2\}$.
 
 Given the support vector values $\alpha$, we can make predictions for new inputs $x$ as 
 \begin{equation}
@@ -407,6 +444,9 @@ are listed next to them.
 even & odd & & & 0.01 & 245/1500\\\hline
 \end{tabular}
 \end{center}
+
+
+We optionally normalized input pixel features to the range [-1, 1], so that an input vector $x$ is mapped to $2x/255-1$. This normalization marginally improved classification accuracy for the test set (Figure \ref{fig:4-1-normalization}).
 
 Note that we used unnormalized data for both.
 Normalization did not significantly affect test set accuracy
