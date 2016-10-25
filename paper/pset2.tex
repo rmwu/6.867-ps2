@@ -161,8 +161,6 @@ Upon inspection,
 it is clear that for large $C$
 (i.e. in the hard-SVM limit),
 the support vectors are $(2,2)$ and $(0,-1)$.
-% TODO
-% include a picture?
 
 
 We tested our soft-SVM implementation
@@ -170,14 +168,28 @@ on the same four 2D datasets from the previous section.
 % TODO
 % makes sure 2D datasets are mentioned in previous section
 Setting regularization parameter $C=1$,
-% TODO fill in
-% mention linearly separable case vs. non-separable
+we get the following support vector counts and misclassification rates on validation data:
 
-% results
-%1 (4/400 support vectors, 0/200 misclassification)
-%2 (174/400 support vectors, 36/200 error)
-%3 (33/400 support vectors, 6/200 error)
-%4 (392/400 sup vec, 122/400 error)
+\begin{center}
+\begin{tabular}{|c|c|c|}
+\hline
+Dataset & Support vectors & Misclassification \\\hline
+1 & 4/400 & 0/200 \\
+2 & 174/400 & 36/200 \\
+3 & 33/400 & 6/200 \\
+4 & 392/400 & 122/400\\\hline
+\end{tabular}
+\end{center}
+
+Our model clearly performs better in datasets 1 and 3.
+Indeed, these datasets are linearly separable (or very nearly so),
+as is apparent from Figure~\ref{fig:2-3-model-selection},
+where the test data from each dataset are plotted.
+Observe also that the number of support vector generally tracks the misclassification rate.
+
+In the next section, we will kernelize our SVM routine
+to handle nonlinearities in our data
+(for instance, the XOR data in dataset 4 is roughly separable, but only nonlinearly).
 
 
 
@@ -227,17 +239,16 @@ Finally, we took the best of the best two models (again by validation error).
 We show these best models on test data in Figure~\ref{fig:2-3-model-selection}
 along with the corresponding test errors.
 
-\begin{figure*}[h]
-      \centering
-%   \includegraphics[width=3in]{img/p2-3-d1-c001/test.pdf}
-%   \includegraphics[width=3in]{img/p2-3-d2-c1-rbf025/test.pdf}
-%   \includegraphics[width=3in]{img/p2-3-d3-c100-rbf025/test.pdf}
-%   \includegraphics[width=3in]{img/p2-3-d4-c1-rbf10/test.pdf}
+\begin{figure*}[t]
+   \centering
+   \includegraphics[width=3in]{img/p2-3-d1-c001/test.pdf}
+   \includegraphics[width=3in]{img/p2-3-d2-c1-rbf025/test.pdf}
+   \includegraphics[width=3in]{img/p2-3-d3-c100-rbf025/test.pdf}
+   \includegraphics[width=3in]{img/p2-3-d4-c1-rbf10/test.pdf}
    \caption{Decision boundaries (with contours $t = \pm1$)
    on test data for best models produced by model selection.
-   Of the 400 test data points in each data set,
-   our best model for each made 0, 12, 7, 17 errors, respectively.}
-   \label{fig:2-3-gaussian-rbf}
+   For each dataset, our best model had a misclassification rate of 0, 6, 3.5, 4.25\%, respectively.}
+   \label{fig:2-3-model-selection}
 \end{figure*}
 
 In the linearly separable case, with a linear kernel,
@@ -259,11 +270,11 @@ We see this lower in bias qualitatively
 in the larger number of support vectors
 and in the tighter shapes of the decision boundaries.
 
-\begin{figure*}[h]
+\begin{figure*}[t]
    \centering
-%   \includegraphics[width=2.4in]{img/p2-3-d2-c1-rbf02/validate.pdf}
-%   \includegraphics[width=2.4in]{img/p2-3-d2-c1-rbf06/validate.pdf}
-%   \includegraphics[width=2.4in]{img/p2-3-d2-c1-rbf20/validate.pdf}
+   \includegraphics[width=2.4in]{img/p2-3-d2-c1-rbf02/validate.pdf}
+   \includegraphics[width=2.4in]{img/p2-3-d2-c1-rbf06/validate.pdf}
+   \includegraphics[width=2.4in]{img/p2-3-d2-c1-rbf20/validate.pdf}
    \caption{SVM decision boundaries (with contours $t = \pm1$) on validation data for dataset 2, with $C = 1$ and Gaussian RBF kernels with bandwidths $\sigma=0.2,0.6,2.0$, in that order.}
    \label{fig:2-3-gaussian-rbf}
 \end{figure*}
