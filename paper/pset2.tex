@@ -266,10 +266,10 @@ We illustrate these findings in Figure~\ref{fig:2-3-gaussian-rbf}.
 
 In general,
 Gaussian kernel SVMs have lower bias,
-but potentially higher variance,
-as one would expect, since using RBF kernels is equivalent to
-performing mapping the raw data into an infinite-dimensional feature space.
-We see this lower in bias qualitatively
+but introduce greater variance,
+since using RBF kernels is equivalent to
+mapping the raw data into an infinite-dimensional feature space.
+This lower bias is manifested
 in the larger number of support vectors
 and in the tighter shapes of the decision boundaries.
 
@@ -450,7 +450,7 @@ with our quadratic-programming-based SVM implementation.
 Comparing with our results from the previous section,
 we find that kernelizing our SVMs can improve results
 (as was the case in the 3/5 classification problem).
-In other problems, kernelization had little effect.
+In other cases, kernelization had little effect.
 We conjecture that this lack of improvement results from
 the underlying dataset being nearly linearly separable.
 
