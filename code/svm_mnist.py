@@ -15,7 +15,7 @@ def get_svm_classification_error(Xtr, Ytr, Xval, Yval, C, kernel_func):
 
 def find_optimal_parameters(totally_partitioned,
                             get_error,
-                            C_range=[0.01, 0.1, 1, 10, 100],
+                            C_range=[1, 10, 100, 300, 1000],
                             kernel_func=None):
     """
     Find the optimal value of C 
@@ -38,6 +38,7 @@ def main():
     parser.add_argument("--pos", nargs="+")
     parser.add_argument("--neg", nargs="+")
     parser.add_argument("--normalize", action="store_true")
+    parser.add_argument("--rbf", action="store_true")
     args = parser.parse_args()
 
     positive = args.pos
@@ -81,19 +82,26 @@ def main():
                                        get_svm_classification_error,
                                        kernel_func=kernel_func)
 
-    # best_lin_c, lin_val_error, lin_test_error = optimize(svm.linear_kernel)
+    if args.rbf:
+        bandwidths = [3, 30, 300, 3000]
+        rbf_optimization_results = [optimize(svm.make_gaussian_rbf(sigma)) for sigma in bandwidths]
+        rbf_val_errors = [x[1] for x in rbf_optimization_results]
+        best_sigma_ind = np.argmin(rbf_val_errors)
 
-    bandwidths = [0.03, 0.3, 3, 30, 300]
-    rbf_optimization_results = [optimize(svm.make_gaussian_rbf(sigma)) for sigma in bandwidths]
-    rbf_val_errors = [x[1] for x in rbf_optimization_results]
-    best_sigma_ind = np.argmin(rbf_val_errors)
+        best_rbf_c, rbf_val_error, rbf_test_error = rbf_optimization_results[best_sigma_ind]
+        best_sigma = bandwidths[best_sigma_ind]
 
-    best_rbf_c, rbf_val_error, rbf_test_error = rbf_optimization_results[best_sigma_ind]
-    best_sigma = bandwidths[best_sigma_ind]
-
-    # print("Best linear SVM: C = {}, val error = {}, test error = {}".format(best_lin_c, lin_val_error, lin_test_error))
-    print("Best RBF SVM: C = {}, sigma = {}, val error = {}/{}, test error = {}/{}" \
-        .format(best_rbf_c, best_sigma, rbf_val_error, len(partitioned[1][1]), rbf_test_error, len(partitioned[2][1])))
+        print("Best RBF SVM: C = {}, sigma = {}, val error = {}/{}, test error = {}/{}" \
+            .format(best_rbf_c, best_sigma,
+                rbf_val_error, len(partitioned[1][1]),
+                rbf_test_error, len(partitioned[2][1])))
+    else:
+        best_lin_c, lin_val_error, lin_test_error = \
+            optimize(svm.linear_kernel)
+        print("Best linear SVM: C = {}, val error = {}/{}, test error = {}/{}" \
+            .format(best_lin_c,
+                lin_val_error, len(partitioned[1][1]),
+                lin_test_error, len(partitioned[2][1])))
 
 if __name__ == '__main__':
     main()
