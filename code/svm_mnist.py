@@ -1,3 +1,5 @@
+import sys
+
 import numpy as np
 import svm
 
@@ -32,15 +34,45 @@ def find_optimal_parameters(totally_partitioned,
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument("dataset_name", help="name of the dataset")
+
+    parser.add_argument("--pos", nargs="+")
+    parser.add_argument("--neg", nargs="+")
+    parser.add_argument("--normalize", action="store_true")
     args = parser.parse_args()
 
-    parts = ("train", "validate", "test")
-    datasets = [np.loadtxt('data/data{}_{}.csv'.format(args.dataset_name, part)) \
-        for part in parts]
+    positive = args.pos
+    negative = args.neg
 
-    partitioned = [(dataset[:, 0:2].copy(), dataset[:, 2:3].copy()) \
-           for dataset in datasets]
+    def make_labeled_examples(digit_subset, label):
+        ptrain = []
+        pval = []
+        ptest = []
+        for d in digit_subset:
+            examples = np.loadtxt("data/mnist_digit_{}.csv".format(d)).tolist()
+            ptrain += examples[:200]
+            pval += examples[200:350]
+            ptest += examples[350:500]
+
+        def maybe_normalize(arr):
+            if args.normalize:
+                return (arr * 2/255) - 1
+            else:
+                return arr
+
+        return (maybe_normalize(np.array(ptrain)), maybe_normalize(np.array(pval)), maybe_normalize(np.array(ptest)))
+
+    ptrain, pval, ptest = make_labeled_examples(positive, 1)
+    ntrain, nval, ntest = make_labeled_examples(negative, -1)
+
+
+
+    def badly_named_helper(ptrain, ntrain):
+        return np.expand_dims(
+            np.concatenate(
+                (np.ones(len(ptrain)), (-1*np.ones(len(ntrain)))), axis=0), axis=1)
+
+    partitioned = [(np.concatenate(x,axis=0),badly_named_helper(*x)) \
+        for x in ((ptrain, ntrain),(pval,nval),(ptest,ntest))]
 
     print([[x.shape for x in y] for y in partitioned])
 
@@ -65,3 +97,5 @@ def main():
 
 if __name__ == '__main__':
     main()
+    print("Command: {}".format(" ".join(sys.argv)))
+
