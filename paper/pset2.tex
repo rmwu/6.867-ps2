@@ -66,20 +66,6 @@ as gradient descent progressed.
 When $\lambda = 1$, $||w||$ was penalized,
 and so the finaly $||w||$ was slightly smaller magnitude
 than it was when $\lambda = 0$.
-%When we set $\lambda = 1$, $||w||$ is penalized,
-%we see that there is less fluctuation in $||w||$ (Figure~\ref{fig:weight-regularization}).
-%The exact shift in $||w||$, however,
-%was quite sensitive to changes in initial guess.
-% TODO ^^ be more clear
-
-%  (Figure~\ref{fig:weight-regularization}). 
-%\begin{figure*}
-%   \centering
-%   \includegraphics[width=3in]{img/1-1-weights.pdf}
-%   \caption{Effects of regularization on weight vector. I promise I'll replace this.}
-%   % TODO please replace
-%   \label{fig:weight-regularization}
-%\end{figure*}
 
 \begin{figure*}
    \centering
@@ -107,9 +93,6 @@ Recall that the objective function with $L_1$ regularization is
 \end{equation}
 where $||w||_1 = \sum_{i=1}^n{|w_i|}$. 
 While $L_2$ regularization maintained small values throughout $w$, $L_1$ allowed for sparse $w$, especially when $\lambda$ increased. $L_1$ also tended to be less stable, causing more fluctuations in $w$ across different $\lambda$. At high $\lambda$ (e.g. $\lambda = 8$), the sparser $L_1$ weights led to higher classification error than the $L_2$ weights. However, both regularization schemes produced similar decision boundaries, as drawn in Figure \ref{fig:1-3-boundaries}.
-%For small $\lambda$,
-%$L_2$ regularization resulted in smaller weights
-%than $L_1$ regularization, since the magnitude of $w$ is penalized more.
 
 We selected the optimal hyperparameters for each dataset
 by rate of misclassification on the validation set.
@@ -127,8 +110,6 @@ dataset & $\lambda$	& regularization		 & accuracy \\\hline
         4	& 1.0 & $L_1$ & 0.500 \\\hline
 \end{tabular}
 \end{center}
-
-% TODO discuss results
 
 
 % % % % % % % % % %
@@ -220,8 +201,6 @@ generally tracks the misclassification rate.
 In the next section, we will kernelize our SVM routine
 to handle nonlinearities in our data
 (for instance, the XOR data in dataset 4 is roughly separable, but only nonlinearly).
-
-
 
 \subsection{Kernelization}
 \label{subsec:kernelization}
@@ -438,7 +417,8 @@ in analogy with Equation~\ref{eq:soft-svm-predict}.
 We implemented kernelized Pegasos
 and tested it with Gaussian RBF kernels,
 fixing $\lambda = 0.02$ and training for 10000 epochs,
-varying the bandwidth $\gamma = \{2^{-2},\dots,2^2\}$.
+varying the bandwidth $\gamma = \{2^{-2},\dots,2^2\}$
+(where $\gamma = \f12\sigma^{-2}$).
 We found that smaller $\gamma$ resulted in fewer support vectors:
 \begin{center}
     \begin{tabular}{|c||c|c|c|c|c|}
@@ -455,7 +435,7 @@ We illustrate this effect in Figure~\ref{fig:3-3-gamma} for a sample dataset.
 	\includegraphics[width=2.4in]{img/3-2-margins/3-3-kernel-025.pdf}
 	\includegraphics[width=2.4in]{img/3-2-margins/3-3-kernel-1.pdf}
 	\includegraphics[width=2.4in]{img/3-2-margins/3-3-kernel-4.pdf}
-    \caption{Larger $\gamma$ increases risk of overfitting to data.
+    \caption{Larger $\gamma$ increases the fit to data.
        On the test sets,
        classification errors were 28/200, 14/200, and 11/200, respectively.
        These results are in analogy
