@@ -10,6 +10,11 @@
 \usepackage{multicol}
 \usepackage{diagbox}
 
+\usepackage{caption}% http://ctan.org/pkg/caption
+\usepackage[labelformat=simple]{subcaption}% http://ctan.org/pkg/subcaption
+\newcommand{\pic}[1]{\rule{#1}{#1}}% Fake picture of size #1 x #1
+\renewcommand\thesubfigure{(\alph{subfigure})}% Allow sub-figure reference to be correctly printed
+
 \usepackage{xcolor}
 %\usepackage[printwatermark]{xwatermark}
 %\newwatermark*[allpages,color=gray!50,angle=45,scale=3,xpos=0,ypos=0]{DRAFT}
@@ -130,8 +135,8 @@ we predict its label $y$ as
 where $\alpha^*_i$ is the optimal value of $\alpha_i$
 from Equation~\ref{eq:soft-svm-dual}.
 
-For instance, given the sample dataset shown
-in Table~\ref{tab:2-1-toy-dataset},
+For instance, given a toy dataset with positive examples
+$(2, 2), (2, 3)$ and negative examples $(0, -1), (-3, -2)$,
 our optimization problem takes the form
 \begin{equation}
     \label{eq:soft-svm-dual-concrete}
@@ -159,19 +164,6 @@ the support vectors are $(2,2)$ and $(0,-1)$.
 % TODO
 % include a picture?
 
-\begin{table*}[h]
-    \caption{default}
-    \begin{center}
-    \begin{tabular}{|c|c|c|}
-    $x_1$ & $x_2$ & $y$ \\\hline
-    2 & 2 & +1 \\
-    2 & 3 & +1 \\
-    0 & -1 & -1 \\
-    -3 & -2 & -1
-    \end{tabular}
-    \end{center}
-    \label{tab:2-1-toy-dataset}
-\end{table*}
 
 We tested our soft-SVM implementation
 on the same four 2D datasets from the previous section.
@@ -211,11 +203,10 @@ By replacing the inner products in
 Equations~\ref{eq:soft-svm-dual} and \ref{eq:soft-svm-predict}
 with the corresponding kernels,
 we arrive at the kernelized soft-SVM optimization problem.
-
-We kernelized our SVM routine
+Thus, we kernelized our SVM routine
 and tested it with a linear kernel
 \begin{equation}
-    k(x, x') = 1 + x\cdot x'
+    k(x, x') = x\cdot x'
 \end{equation}
 and with Gaussian RBF kernels
 \begin{equation}
@@ -229,7 +220,54 @@ We chose values of $C$ in
 
 In the linearly separable case, with a linear kernel,
 we found that increasing $C$ led to tighter margins and fewer support vectors.
-The model made no misclassifications on the validation data.
+The model made no misclassifications on the validation data for $C$ in the range we tested.
+
+Gaussian kernels worked well when we chose bandwidth~$\sigma$
+commensurate to the size of the spatial features of the dataset.
+Excessively small $\sigma$ created decision boundaries that overfit to training data.
+On the other hand, models with $\sigma$ too large were unable to discern tight structure.
+We illustrate these findings in Figure~\ref{fig:2-3-gaussian-rbf}
+
+\begin{figure*}[h]
+   \centering
+   \includegraphics[width=2.4in]{img/p2-3-d2-c1-rbf02/validate.pdf}
+   \includegraphics[width=2.4in]{img/p2-3-d2-c1-rbf06/validate.pdf}
+   \includegraphics[width=2.4in]{img/p2-3-d2-c1-rbf20/validate.pdf}
+   \caption{SVM decision boundaries (with contours $t = \pm1$) on validation data for dataset 2, with $C = 1$ and Gaussian RBF kernels with bandwidths $\sigma=0.2,0.6,2.0$, in that order.}
+   \label{fig:2-3-gaussian-rbf}
+\end{figure*}
+
+
+% TODO phrase as prose:
+\begin{itemize}
+    \item
+    Gaussian kernels produced better classification accuracy, but there were more support vectors.
+    Intuition: in higher dimensions, supporting hyperplanes rest on more support vectors.
+    \item
+    For linearly inseparable data, and linear kernel, changing $C$ didn't change much. (dataset 2)
+    \item
+    small bandwidth lets you pick out fine structure (dataset 2, sigma = 0.5, C = 100)
+    \item
+    Gaussian kernels don't overfit super-easily (unless you pick small bandwidth)
+\end{itemize}
+
+%\begin{figure*}
+%\begin{minipage}[b]{.5\textwidth}
+%      \begin{subfigure}{.5\textwidth} 
+%        \centering
+%        \pic{40pt}
+%        % Add \par\vspace*{20pt} here and...
+%        \caption{Subfig1}\label{fig:2a}
+%      \end{subfigure}%
+%      \begin{subfigure}{.5\textwidth} 
+%        \centering
+%        \pic{40pt}
+%        % ...here to lower the subcaptions and...
+%        \caption{Subfig2}\label{fig:2b}
+%      \end{subfigure} \par \vspace*{20pt} % ...remove them from here
+%      \caption{Another figure}\label{fig:2}
+%    \end{minipage}%
+%    \end{figure*}
 
 % TODO
 % Report your results and answer the following questions:
@@ -237,14 +275,13 @@ The model made no misclassifications on the validation data.
 
 
 %(a) What happens to the geometric margin 1/|w| as C increases? Will this always happen as we increase C?
-Finally, we make some observations about hyperparameter~$C$.
+We make some observations about hyperparameter~$C$.
 From Equation~\ref{eq:soft-svm-dual},
-larger values of $C$ correspond to less tolerance for slack.
-So for small $C$,
-the model favors
+larger $C$ corresponds to less tolerance for slack.
+For small $C$, the model favors
 maximizing the margin at the expense of slack,
 so we expect increasing $C$ shrinks the geometric margin,
-as our experiments also show.
+as our experiments confirm.
 % TODO illustrate?
 
 % (b) What happens to the number of support vectors as C increases?
@@ -264,20 +301,19 @@ The size of the margin
 is not a good metric for choosing $C$,
 as can make the margin arbitrarily large
 by taking $C \to 0$
-(indeed, setting $C = 0$ allows arbitrary amounts of slack
+(indeed, $C = 0$ allows arbitrary amounts of slack
 with no penalty on the objective function).
 We'd instead like a metric that evaluates
 the performance of a given $C$
 on unseen data.
 
-A better metric for $C$ is
-the hinge loss incurred by our classifier
-(Equation~\ref{eq:soft-svm-predict} without the $\sgn$ operator)
-on a validation dataset:
+One such metric is the hinge loss incurred
+by our classifier on a validation dataset:
 \begin{equation}
-    \sum_{i} \max(0, 1 - y\sind{i} t(x\sind{i}))
+    \sum_{i} \max\lt(0, 1 - y\sind{i} t\lt(x\sind{i}\rt)\rt)
 \end{equation}
-where the sum is taken over all validation data.
+where $t$ is the prediction function in Equation~\ref{eq:soft-svm-predict}
+and where the sum is taken over all validation data.
 
 
 % % % % % % % % % %
