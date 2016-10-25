@@ -53,15 +53,16 @@ We minimized the objective function using standard gradient descent methods, wit
 \end{equation}
 where $s(x) = 1/(1+e^{-x})$, the sigmoid function.
 
-We tested our implementation against four labeled datasets, each with 400 training samples, 200 validation samples, and 200 testing samples. The data consisted of two-dimensional vectors $x\sind{i}$ labeled by $y\sind{i} = \pm1$. We observed that $||w||$ decreases, eventually converging, over time. When $\lambda = 1$, $||w||$ is penalized, we see that there is less fluctuation in $||w||$ (Figure~\ref{fig:weight-regularization}). However, we also noticed that the exact shift in $||w||$ was quite sensitive to changes in initial guess.
+We tested our implementation against four labeled datasets, each with 400 training samples, 200 validation samples, and 200 testing samples. The data consisted of two-dimensional vectors $x\sind{i}$ labeled by $y\sind{i} = \pm1$. We observed that $||w||$ decreases, eventually converging, over time. When $\lambda = 1$, $||w||$ is penalized, we see that there is less fluctuation in $||w||$. However, we also noticed that the exact shift in $||w||$ was quite sensitive to changes in initial guess.
 
-\begin{figure*}
-   \centering
-   \includegraphics[width=3in]{img/1-1-weights.pdf}
-   \caption{Effects of regularization on weight vector. I promise I'll replace this.}
-   % TODO please replace
-   \label{fig:weight-regularization}
-\end{figure*}
+%  (Figure~\ref{fig:weight-regularization}). 
+%\begin{figure*}
+%   \centering
+%   \includegraphics[width=3in]{img/1-1-weights.pdf}
+%   \caption{Effects of regularization on weight vector. I promise I'll replace this.}
+%   % TODO please replace
+%   \label{fig:weight-regularization}
+%\end{figure*}
 
 \begin{figure*}
    \centering
@@ -87,27 +88,27 @@ For small $\lambda$,
 $L_2$ regularization resulted in smaller weights
 than $L_1$ regularization, since the magnitude of $w$ is penalized more. % (figure \ref{fig:l1-l2}).
 
-After training, we used our validation set to select the optimal parameters for each dataset (Table \ref{table:regularization-four}). We noticed that some datasets did not have a unique optimal parameter; for these, we arbitrarily selected one. These values were then to obtain the performance on our test sets (Table \ref{table:1-3-optimal}).
+After training, we used our validation set to select the optimal parameters for each dataset. We noticed that some datasets did not have a unique optimal parameter; for these, we arbitrarily selected one. These values were then to obtain the performance on our test sets (Table \ref{table:1-3-optimal}).
 
 % TODO explain datasets
 
 % TODO and then?
 
-\begin{table*}
-    \caption{Classification accuracy for logistic regression with $L_2$ and $L_1$ regularization.
-    For each entry, the $L_2$ accuracy is followed by the $L_1$ accuracy. Some datasets contained multiple ``optimal'' models.}
-    % TODO please fix this
-    \centering
-    \begin{tabular}{|c||c|c|c|c|c|c|c|}
-        \hline
-        \backslashbox{data}{$\lambda$} & 0.125		& 0.25		 & 0.5	   & 1 & 2 & 4 & 8 \\\hline
-        1	&  \color{red}1.0, 1.0 &  \color{red}1.0, 1.0 & \color{red}1.0, 1.0 &  \color{red}1.0, 1.0 &   \color{red}1.0, 1.0  & 1.0, 0.995 & 1.0, 0.995 \\
-        2	& 0.805, 0.805 & 0.805, 0.805 &0.805, 0.805 & 0.805, 0.805 &  0.805,  \color{red}0.81  &  \color{red}0.81, 0.81 &  \color{red}0.81, 0.81 \\
-        3	& 0.955, 0.95 & 0.96, 0.955 & 0.965, 0.955 & 0.97, 0.955 & 0.97, 0.965 &  0.97,  \color{red}0.975  & 0.97, 0.97\\
-        4	& 0.4975,  \color{red}0.5 & 0.4975,  \color{red}0.5& 0.4975,  \color{red}0.5& 0.4975,  \color{red}0.5& 0.4975,  \color{red}0.5& 0.4975,  \color{red}0.5& 0.4975,  \color{red}0.5 \\\hline
-    \end{tabular}
-    \label{table:regularization-four}
-\end{table*}
+%\begin{table*}
+%    \caption{Classification accuracy for logistic regression with $L_2$ and $L_1$ regularization.
+%    For each entry, the $L_2$ accuracy is followed by the $L_1$ accuracy. Some datasets contained multiple ``optimal'' models.}
+%    % TODO please fix this
+%    \centering
+%    \begin{tabular}{|c||c|c|c|c|c|c|c|}
+%        \hline
+%        \backslashbox{data}{$\lambda$} & 0.125		& 0.25		 & 0.5	   & 1 & 2 & 4 & 8 \\\hline
+%        1	&  \color{red}1.0, 1.0 &  \color{red}1.0, 1.0 & \color{red}1.0, 1.0 &  \color{red}1.0, 1.0 &   \color{red}1.0, 1.0  & 1.0, 0.995 & 1.0, 0.995 \\
+%        2	& 0.805, 0.805 & 0.805, 0.805 &0.805, 0.805 & 0.805, 0.805 &  0.805,  \color{red}0.81  &  \color{red}0.81, 0.81 &  \color{red}0.81, 0.81 \\
+%        3	& 0.955, 0.95 & 0.96, 0.955 & 0.965, 0.955 & 0.97, 0.955 & 0.97, 0.965 &  0.97,  \color{red}0.975  & 0.97, 0.97\\
+%        4	& 0.4975,  \color{red}0.5 & 0.4975,  \color{red}0.5& 0.4975,  \color{red}0.5& 0.4975,  \color{red}0.5& 0.4975,  \color{red}0.5& 0.4975,  \color{red}0.5& 0.4975,  \color{red}0.5 \\\hline
+%    \end{tabular}
+%    \label{table:regularization-four}
+%\end{table*}
 
 \begin{table*}
     \caption{Classification performance on testing datasets.}
@@ -398,11 +399,27 @@ The following kernelized Pegasos takes in a Gram matrix, where entry $k_{i,j} = 
 Note that the primary difference between the kernelized Pegasos and the original version is that in place of a $d$ dimensional $w_t$, we now store $\alpha_i$ for each training instance, and in place of $x_i$, we apply some transformation $\phi(x_i)$.
 
 We implemented the kernelized Pegasos algorithm with a Gaussian kernel, given fixed $\lambda = 0.02$ and varying bandwidths $\gamma = \{2^{-2},\dots,2^2\}$.
+\begin{equation}
+    K(x, y) = e^{-\gamma || x-y || ^2}
+\end{equation}
+We found that smaller values of $\gamma$ resulted in fewer support vectors.
 
-Given the support vector values $\alpha$, we can make predictions for new inputs $x$ as 
+\begin{center}
+\begin{tabular}{|c||c|c|c|c|c}
+\hline
+$\gamma$ & $2^{-2}$ & $2^{-1}$ & 1 & 2 & 4\\ \hline
+SV & 1/400 & 1/400 & 2/400 & 45/400 & 100/400 \\ \hline
+\end{tabular}
+\end{center}
+Thus, the decision boundary becomes more tight as we decrease $\gamma$.
+
+% 2^{-2} & 2^{-1} & 1 & 2 & 4
+ % 1/400 & 1/400 & 2/400 & 45/400 & 100/400
+Given the support vector values $\alpha$, we can make predictions for new inputs $x$ by checking if 
 \begin{equation}
     \sum_j{a_j K(x^{(i)},x^{(j)}) < 1 }
 \end{equation}
+This formulation is a soft-SVM, so points may be inside the margins.
 
 % % % % % % % % % %
 %    PROBLEM 4
@@ -438,15 +455,13 @@ are listed next to them.
 \begin{tabular}{|c|c||c|c||c|c|c|}
 \hline
 + & - & $\lambda$ & LR error & $C$ & SVM error \\\hline
-1 & 7 & & & 0.01 & 4/300 \\
-3 & 5 & & & 0.01 & 16/300 \\
-4 & 9 & & & 0.01 & 17/300\\
-even & odd & & & 0.01 & 245/1500\\\hline
+1 & 7 & 0.5 & 3/300 & 0.01 & 4/300 \\
+3 & 5 & 0.5 & 18/300 & 0.01 & 16/300 \\
+4 & 9 & 0.5 & 12/300 & 0.01 & 17/300\\
+even & odd & 0.5 & 225/1500 & 0.01 & 245/1500\\\hline
 \end{tabular}
 \end{center}
-
-
-We optionally normalized input pixel features to the range [-1, 1], so that an input vector $x$ is mapped to $2x/255-1$. This normalization marginally improved classification accuracy for the test set (Figure \ref{fig:4-1-normalization}).
+%We optionally normalized input pixel features to the range [-1, 1], so that an input vector $x$ is mapped to $2x/255-1$. This normalization marginally improved classification accuracy for the test set (Figure \ref{fig:4-1-normalization}).
 
 Note that we used unnormalized data for both.
 Normalization did not significantly affect test set accuracy
@@ -497,13 +512,21 @@ the underlying dataset being nearly linearly separable.
 
 \subsection{Pegasos and Quadratic Programming}
 
-
-
-
-
-
-
-
+%Classifying MNIST positive [1] and negative [7] with method pegasos_digit
+%Converged after 1000000 iterations.
+%0 samples out of 400 classified wrong.
+%
+%Classifying MNIST positive [3] and negative [5] with method pegasos_digit
+%Converged after 1000000 iterations.
+%13 samples out of 400 classified wrong.
+%
+%Classifying MNIST positive [4] and negative [9] with method pegasos_digit
+%Converged after 1000000 iterations.
+%13 samples out of 400 classified wrong.
+%
+%Classifying MNIST positive [0, 2, 4, 6, 8] and negative [1, 3, 5, 7, 9] with method pegasos_digit
+%Converged after 1000000 iterations.
+%258 samples out of 2000 classified wrong.
 
 
 
