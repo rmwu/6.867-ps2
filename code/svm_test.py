@@ -14,6 +14,7 @@ parser.add_argument("data_name", help="name of the dataset to run on")
 parser.add_argument("C", type=float, help="SVM regularization parameter")
 parser.add_argument("--save_path", help="directory to save images at, if specified")
 parser.add_argument("-v", action="count", help="verbosity")
+parser.add_argument("--no_show", action="store_true")
 
 kernel_group = parser.add_mutually_exclusive_group()
 kernel_group.add_argument("--rbf", type=float, help="if specified, use RBF kernel with specified bandwidth")
@@ -46,10 +47,10 @@ kernel = None
 kernel_msg = ""
 if rbf_sigma:
 	kernel = svm.make_gaussian_rbf(rbf_sigma)
-	kernel_msg = "with gaussian kernel, sigma = {}".format(rbf_sigma)
+	kernel_msg = "RBF kernel, $\\sigma = {}$".format(rbf_sigma)
 if args.linear:
 	kernel = svm.linear_kernel
-	kernel_msg = "with linear kernel"
+	kernel_msg = "Linear kernel"
 
 
 print("training SVM {}, C = {}".format(kernel_msg, C))
@@ -79,6 +80,8 @@ print("validation error rate: {} = {}/{}" \
 
 # plot validation results
 plotDecisionBoundary(X, Y, predictSVM, [-1, 0, 1],
-	title='SVM Validate', save_path=save_path_val)
+	title='SVM Validate, {}, $C = {}$'.format(kernel_msg, C),
+	save_path=save_path_val)
 
-pl.show()
+if not args.no_show:
+	pl.show()
