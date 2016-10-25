@@ -64,7 +64,7 @@ With both $\lambda=0$ and $\lambda=1$,
 $||w||$ decreased and eventually converged
 as gradient descent progressed.
 When $\lambda = 1$, $||w||$ was penalized,
-and so the finaly $||w||$ was slightly smaller magnitude
+and so the final $||w||$ was slightly smaller
 than it was when $\lambda = 0$.
 
 \begin{figure*}
@@ -339,7 +339,7 @@ Instead, we may consider solving the following soft-SVM
 using the Pegasos algorithm
 (primal estimated sub-gradient solver for SVM):
 \begin{equation}
-   \min_w \lt( \f{\lambda}{2}||w||^2 + \f1n\sum_{i=1}^n{\max(0,1-y_i(w^Tx_i))} \rt)
+   \min_w \lt( \f{\lambda}{2}||w||^2 + \f1n\sum_{i=1}^n \max\lt(0,1-y\sind{i}(w^Tx\sind{i})\rt) \rt)
 \end{equation}
 This problem is equivalent to C-SVM for $C= \f{1}{n\lambda}$.
 Given a regularization parameter $\lambda$
@@ -350,17 +350,22 @@ Pegasos stochastically updates our weight vector $w$ as follows.
     Initialize $t$ and $w_0$ to 0.
     \item
     At each iteration,
-    increment $t$ and set a decaying step size $\eta_t = 1/(t\lambda)$.
+    increment $t$ and set a decaying step size $\eta_t = (t\lambda)\inv$.
     \item
-    If $y_i(w_t^Tx_i)<1$,
-    then $w_{t+1}\leftarrow(1-\eta_t\lambda)w_t+\eta_ty_ix_i$.
-    Else, $w_{t+1}\leftarrow(1-\eta_t\lambda)w_t$.
+    Choose some training example $i$ and update
+    \[
+        w_{t+1} \leftarrow (1 - \eta_t\lambda) w_t +
+        \begin{cases}
+            \eta_t y\sind{i} x\sind{i} & y\sind{i}(w_t^T x\sind{i})<1 \\
+            0 & \tx{otherwise}
+        \end{cases}
+    \]
     \item
     Repeat until $t$ reaches the maximum number of epochs.
 \end{enumerate}
 We implemented the Pegasos algorithm and included a bias term $w_0$
 that we did not penalize by regularization.
-(We simply update $w_0$ as $w_0 = w_0 + \eta_t y_i$.)
+(We simply update $w_0$ as $w_0 = w_0 + \eta_t y\sind{i}$.)
 
 Now recall that we define the margin as $||w||\inv$.
 The regularization constant $\lambda$ limits the magnitude of $w$,
@@ -380,29 +385,38 @@ We show this effect in Figure~\ref{fig:3-2-margins} on a sample dataset.
 We can extend the Pegasos algorithm
 to solve the following kernelized soft-SVM problem:
 \begin{equation}
-   \min_w{\f{\lambda}{2}||w||^2} + \f{1}{n}\sum_{i=1}^n{\max\{0,1-y_i(w^T\phi(x_i))\}}
+   \min_w \lt( \f{\lambda}{2}||w||^2
+   +
+   \f{1}{n}\sum_{i=1}^n \max\lt(0,1-y\sind{i}\lt(w^T\phi(x\sind{i})\rt)\rt) \rt)
 \end{equation}
 where we map $x$ to some transformation $\phi(x)$
 (in the previous section, $\phi$ was simply the identity).
 The following kernelized Pegasos algorithm takes in a Gram matrix, 
-where entry $k_{i,j} = K(x^{(i)},x^{(j)}) = \phi(x^{(i)})\cdot\phi(x^{(j)})$.
+where entry $k_{ij} = K(x^{(i)},x^{(j)}) = \phi(x^{(i)})\cdot\phi(x^{(j)})$.
 \begin{enumerate}
     \item
     Initialize $t$ and $\alpha_{t=0}$ to 0.
     \item
     At each iteration, increment $t$
-    and set a decaying step size $\eta_t = 1/(t\lambda)$.
+    and set a decaying step size $\eta_t = (t\lambda)\inv$.
     \item
-    If $y_i(\sum_j{\alpha_jK(x_j,x_i)})<1$,
-    then $\alpha_{i}\leftarrow(1-\eta_t\lambda)\alpha_i+\eta_ty_i$.
-    Else, $\alpha_{i}\leftarrow(1-\eta_t\lambda)\alpha_i$.
+    Choose some training example $i$ and update
+    \[
+    \begin{split}
+        w_{t+1} \leftarrow &(1 - \eta_t\lambda)\alpha_i \\ &+
+            \begin{cases}
+            \eta_t y\sind{i} & y\sind{i}\lt(\sum_j{\alpha_jK(x\sind{j},x\sind{i})}\rt)<1 \\
+            0 & \tx{otherwise}
+            \end{cases}
+    \end{split}
+    \]
     \item
     Repeat until $t$ reaches the maximum number of epochs.
 \end{enumerate}
 Note that kernelized Pegasos differs from vanilla Pegasos
 primarily in the use of an $n$-dimensional $\alpha$
 instead of a $d$-dimensional weight vector $w$.
-We also replace $x_i$ with $\phi(x_i)$.
+We also replace $x\sind{i}$ with $\phi(x\sind{i})$.
 
 The vector $\alpha$ may be sparse,
 with non-zero entries for support vectors
@@ -509,12 +523,13 @@ For example, a roundish 4 may look like a 9.
    \includegraphics[width=1.5in]{img/4-1-wrong/4-1-wrong-247.pdf} \hspace{-.25in}
    \includegraphics[width=1.5in]{img/4-1-wrong/4-1-wrong-259.pdf} \hspace{-.25in}
    \includegraphics[width=1.5in]{img/4-1-wrong/4-1-wrong-281.pdf} \hspace{-.25in}
-   \caption{Misclassified images. The top row contains images all labeled as 4 (but misclassified as 9), 
-   while the bottom row contains images labeled as 9.}
+   \caption{Misclassified images.
+       The top row contains images of 4's misclassified as 9's,
+       while the bottom row contains 9's misclassified as 4's.}
    \label{fig:4-1-wrong}
 \end{figure*}
 
-\subsection{SVMs   RBF kernels}
+\subsection{SVMs with RBF kernels}
 
 Next, we introduced nonlinearity into our models
 by using Gaussian RBF kernels with our SVM classifiers.
