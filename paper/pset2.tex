@@ -49,11 +49,21 @@ where NLL is the logistic loss, when $y$ values are $\pm 1$:
 \end{equation}
 We minimized the objective function using standard gradient descent methods, with the gradient of $E_{LR}$ with respect to $w$ as
 \begin{equation}
-    d E_{LR} / d{w} = \sum_{i=1}^n(s(w^tx^{(i)})-y^{(i)})x^{(i)} - 2\lambda w
+    \f{d E_{LR}}{dw} = \sum_{i=1}^n\lt(s(w\cdot x^{(i)})-y^{(i)}\rt)x^{(i)} - 2\lambda w
 \end{equation}
-where $s(x) = 1/(1+e^{-x})$, the sigmoid function.
+where $s(x) = 1/(1+e^{-x})$ is the sigmoid function.
 
-We tested our implementation against four labeled datasets, each with 400 training samples, 200 validation samples, and 200 testing samples. The data consisted of two-dimensional vectors $x\sind{i}$ labeled by $y\sind{i} = \pm1$. We observed that $||w||$ decreases, eventually converging, over time. When $\lambda = 1$, $||w||$ is penalized, we see that there is less fluctuation in $||w||$ (Figure~\ref{fig:weight-regularization}). However, we also noticed that the exact shift in $||w||$ was quite sensitive to changes in initial guess.
+We tested our implementation against four labeled datasets,
+each with 400 training samples,
+200 validation samples,
+and 200 testing samples.
+% TODO ^^ this is not true
+The data consisted of two-dimensional vectors $x\sind{i}$ labeled by $y\sind{i} = \pm1$.
+We observed that $||w||$ decreases, eventually converging, over time.
+When $\lambda = 1$, $||w||$ is penalized,
+we see that there is less fluctuation in $||w||$ (Figure~\ref{fig:weight-regularization}).
+The exact shift in $||w||$, however,
+was quite sensitive to changes in initial guess.
 
 \begin{figure*}
    \centering
@@ -87,7 +97,9 @@ For small $\lambda$,
 $L_2$ regularization resulted in smaller weights
 than $L_1$ regularization, since the magnitude of $w$ is penalized more. % (figure \ref{fig:l1-l2}).
 
-After training, we used our validation set to select the optimal parameters for each dataset (Table \ref{table:regularization-four}). We noticed that some datasets did not have a unique optimal parameter; for these, we arbitrarily selected one. These values were then to obtain the performance on our test sets (Table \ref{table:1-3-optimal}).
+After training, we used our validation set to select the optimal hyperparameters for each dataset (Table \ref{table:regularization-four}).
+Some datasets did not have a unique optimal parameter; for these, we arbitrarily selected one.
+These values were then to obtain the performance on our test sets (Table \ref{table:1-3-optimal}).
 
 % TODO explain datasets
 
@@ -125,6 +137,7 @@ After training, we used our validation set to select the optimal parameters for 
 \end{table*}
 % TODO these seem to belong in two separate tables
 
+
 % % % % % % % % % %
 %    PROBLEM 2
 % % % % % % % % % %
@@ -159,7 +172,7 @@ we predict its label $y$ as
 where $\alpha^*_i$ is the optimal value of $\alpha_i$
 from Equation~\ref{eq:soft-svm-dual}.
 
-For instance, given a toy dataset with positive examples
+For instance, on a toy dataset with positive examples
 $(2, 2), (2, 3)$ and negative examples $(0, -1), (-3, -2)$,
 our optimization problem takes the form
 \begin{equation}
@@ -189,8 +202,6 @@ the support vectors are $(2,2)$ and $(0,-1)$.
 
 We tested our soft-SVM implementation
 on the same four 2D datasets from the previous section.
-% TODO
-% makes sure 2D datasets are mentioned in previous section
 Setting regularization parameter $C=1$,
 we get the following support vector counts and misclassification rates on validation data:
 
@@ -311,7 +322,6 @@ For small $C$, the model favors
 maximizing the margin at the expense of slack,
 so we expect increasing $C$ shrinks the geometric margin,
 as our experiments confirm.
-% TODO illustrate?
 
 Consequently, there are fewer support vectors with large $C$:
 the margin becomes tighter,
@@ -445,16 +455,18 @@ even & odd & & & 0.01 & 245/1500\\\hline
 \end{tabular}
 \end{center}
 
-
-We optionally normalized input pixel features to the range [-1, 1], so that an input vector $x$ is mapped to $2x/255-1$. This normalization marginally improved classification accuracy for the test set (Figure \ref{fig:4-1-normalization}).
-
 Note that we used unnormalized data for both.
 Normalization did not significantly affect test set accuracy
 for either model.
 
+We manually inspected some of the classification errors.
+These images were generally very ambiguous
+(for example, a 4 that looks very much like a 9),
+explaining their misclassification.
+
+
 % TODO STUFF
 
-% mention that SVMs were sensitive to normalization
 
 \subsection{SVMs with RBF kernels}
 
