@@ -31,15 +31,19 @@ def plotDecisionBoundary(X, Y, scoreFn, values, title="", save_path=None):
 
     pl.axis('tight')
 
-def plot_weights(delta_obj):
-    weight_norms = [np.linalg.norm(vals[0]) for vals in delta_obj]
-    iterations = len(weight_norms)
-        
-    plt.plot(np.arange(iterations), weight_norms, color="blue")
+def plot_weights(objs):
+    colors = ["blue","pink"]
+    for delta_obj, color in list(zip(objs, colors)):
+        weight_norms = [np.linalg.norm(vals[0]) for vals in delta_obj]
+        iterations = len(weight_norms)
+
+        plt.plot(np.arange(iterations), weight_norms, color=color)
     
     plt.xlabel("Number of iterations")
-
+    
     y_axis_label = "||w||"
     plt.ylabel(y_axis_label)
+    
+    plt.savefig('1-1-weights.pdf', format='pdf')
     
     plt.show()

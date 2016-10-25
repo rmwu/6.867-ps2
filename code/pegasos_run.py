@@ -28,9 +28,8 @@ def pegasos(X, y, lambdaa, max_cycles):
             if y[i]*(w.T.dot(X[i])) < 1:
                 # this should be a d+1 by 1
                 w0 = w[0]
-                w = (1-eta*lambdaa)*w
-                w[0] = w0
-                w += eta*y[i]*X[i]
+                w = (1-eta*lambdaa)*w + eta*y[i]*X[i]
+                w[0] = w0 * (1 + eta * y[i])
             else:
                 w0 = w[0]
                 w = (1-eta*lambdaa)*w
