@@ -370,12 +370,10 @@ The regularization constant $\lambda$ limits the magnitude of $w$,
 so as we increase $\lambda$, the margin grows.
 We show this effect empirically in Figure~\ref{fig:3-2-margins} for a sample dataset.
 
-% TODO
-
 \begin{figure*}[t]
    \centering
-	\includegraphics[width=3in]{img/3-2-margins.pdf}
-   \caption{Effect of changing $\lambda$ on margins}
+	\includegraphics[width=2.5in]{img/3-2-margins.pdf}
+   \caption{Increasing $\lambda$ penalizes $||w||$ and increases margins, since we define margin as $||w||\inv$.}
    \label{fig:3-2-margins}
 \end{figure*}
 
@@ -404,7 +402,7 @@ The vector $\alpha$ may be sparse, with non-zero entries for support vectors (si
 \end{equation}
 
 We implemented the kernelized Pegasos algorithm with a Gaussian RBF kernel
-(as in Equation \ref{eq:2-2-gaussian-rbf}), given fixed $\lambda = 0.02$, varying bandwidths $\gamma = \{2^{-2},\dots,2^2\}$, and maximum number of epochs = 10000.
+(as in Equation \ref{eq:2-2-gaussian-rbf}), given fixed $\lambda = 0.02$, varying the bandwidth with $\gamma = \{2^{-2},\dots,2^2\}$, and maximum number of epochs = 10000.
 We observed that smaller values of $\gamma$ resulted in fewer support vectors.
 
 \begin{center}
@@ -414,7 +412,16 @@ $\gamma$ & $2^{-2}$ & $2^{-1}$ & 1 & 2 & 4\\ \hline
 SV & 1/400 & 1/400 & 2/400 & 45/400 & 100/400 \\ \hline
 \end{tabular}
 \end{center}
-Thus, the decision boundary becomes tighter as we decrease $\gamma$.
+Thus, the decision boundary becomes tighter as we decrease $\gamma$. We illustrate this effect in Figure~\ref{fig:3-3-gamma} for a sample dataset.
+
+\begin{figure*}[t]
+   \centering
+	\includegraphics[width=2in]{img/3-2-margins/3-3-kernel-025.pdf}
+	\includegraphics[width=2in]{img/3-2-margins/3-3-kernel-1.pdf}
+	\includegraphics[width=2in]{img/3-2-margins/3-3-kernel-4.pdf}
+   \caption{Larger $\gamma$ increases margins.}
+   \label{fig:3-3-gamma}
+\end{figure*}
 
 % % % % % % % % % %
 %    PROBLEM 4
@@ -461,14 +468,28 @@ Note that we used unnormalized data for both.
 Normalization did not significantly affect test set accuracy
 for either model.
 
-We also manually inspected some of the classification errors.
-These images were generally very ambiguous
-(for example, a 4 that looks very much like a 9),
-explaining their misclassification.
+We also manually inspected some of the classification errors, as illustrated 
+in Figure \ref{fig:4-1-wrong}.
+For example, a roundish 4 may look like a 9. These images were generally very ambiguous, even to the human eye,
+which explains their misclassification.
 
-
-% TODO STUFF
-
+\begin{figure*}[t]
+   \centering
+   \includegraphics[width=1in]{img/4-1-wrong/4-1-wrong-11.pdf} \hspace{-.25in}
+   \includegraphics[width=1in]{img/4-1-wrong/4-1-wrong-35.pdf} \hspace{-.25in}
+   \includegraphics[width=1in]{img/4-1-wrong/4-1-wrong-68.pdf} \hspace{-.25in}
+   \includegraphics[width=1in]{img/4-1-wrong/4-1-wrong-82.pdf} \hspace{-.25in}
+   \includegraphics[width=1in]{img/4-1-wrong/4-1-wrong-138.pdf} \hspace{-.25in}
+   
+   \includegraphics[width=1in]{img/4-1-wrong/4-1-wrong-158.pdf} \hspace{-.25in}
+   \includegraphics[width=1in]{img/4-1-wrong/4-1-wrong-224.pdf} \hspace{-.25in}
+   \includegraphics[width=1in]{img/4-1-wrong/4-1-wrong-247.pdf} \hspace{-.25in}
+   \includegraphics[width=1in]{img/4-1-wrong/4-1-wrong-259.pdf} \hspace{-.25in}
+   \includegraphics[width=1in]{img/4-1-wrong/4-1-wrong-281.pdf} \hspace{-.25in}
+   \caption{Misclassified images. The top row contains images all labeled as 4 (but misclassified as 9), 
+   while the bottom row contains images labeled as 9.}
+   \label{fig:4-1-wrong}
+\end{figure*}
 
 \subsection{SVMs with RBF kernels}
 
@@ -503,16 +524,14 @@ too expensive to perform
 with our quadratic-programming-based SVM implementation.
 
 Comparing with our results from the previous section,
-we find that kernelizing our SVMs can improve results
+we find that kernelizing our SVMs can improve some results
 (as was the case in the 3/5 classification problem).
 In other cases, kernelization had little effect.
 We conjecture that this lack of improvement results from
 the underlying dataset being nearly linearly separable.
 
-
 \subsection{Pegasos and Quadratic Programming}
 
-<<<<<<< HEAD
 %Classifying MNIST positive [1] and negative [7] with method pegasos_digit
 %Converged after 1000000 iterations.
 %0 samples out of 400 classified wrong.
@@ -537,44 +556,44 @@ the underlying dataset being nearly linearly separable.
 %   \caption{Effect of pixel feature normalization on classification accuracy, for logistic regression and SVM classifiers. Will fix later}
 %   \label{fig:4-1-normalization}
 %\end{figure*}
-=======
+
 We now run kernelized Pegasos (section~\ref{subsec:kernel-peg})
 on the same four classification problems as above.
-Our test set accuracies are below:  % TODO use actual numbers
-\begin{center}    % TODO use actualnumbers
+Using the optimal $\lambda$ and normalized data, our test set accuracies
+are below: 
+\begin{center} 
 \begin{tabular}{|c|c|c|c|c|}
 \hline
-+ & - & $param_1$ & $param_2$ & Pegasos error \\\hline
-1 & 7 &30 & 10 & 4/300 \\
-3 & 5 &10 & 100 & 5/300\\
-4 & 9 & 30 & 10 & 16/300\\
-even & odd & - & - & - \\\hline
++ & - & $\lambda$ & epochs & Pegasos error \\\hline
+1 & 7 & 0.25 & 100 000 & 2/300 \\
+3 & 5 & 0.5 & 100 000 & 20/300\\
+4 & 9 & 2 & 100 000 & 24/300\\
+even & odd & 1 & 500 000 & 240/1500 \\\hline
 \end{tabular}
 \end{center}
 
-BLAH BLAH comparing accuracies % TODO
-
-Finally, we consider the runtimes of
+We see that Pegasos achieves accuracy as our SVM classifier, given enough epochs.
+Thus, we should consider the runtimes of
 our quadratic-programming based approach and Pegasos.
 For the 1/7 classification problem,
-using Pegasos parameter $\lambda = 123123123$ with $12123$ epochs
-% TODO change these numbers ^
+using Pegasos parameter $\lambda = 0.25$ with $100 000$ epochs
 (chosen because they produced comparably accurate results as our QP approach),
 the training times of the two approaches increased as:
 \begin{center}
     \begin{tabular}{|c|c|c|}\hline
         training set size & QP time (s) & Pegasos time (s) \\\hline
-        200 & 18.1 & \\
-        300 & 30.6 & \\
-        400 & 46.3 & \\
-        500 & 67.8 & \\\hline
+        200 & 18.1 & 2.1\\
+        300 & 30.6 & 2.1\\
+        400 & 46.3 & 2.0\\
+        500 & 67.8 & 2.1\\\hline
     \end{tabular}
 \end{center}
-% TODO fill in for pegasos
 
-% summarize and explain findings
-
->>>>>>> 63cea8e3329c87a999931d74990337ec6f9bd62b
+We see that while the QP runtime grows rapidly as training set size increases, the 
+Pegasos runtime largely remains fast and constant. Since the Pegasos algorithm stochastically 
+updates on single vectors, increasing the training set does not affect how fast the algorithm 
+trains. Therefore, stochastic optimization methods are more optimal in runtime for
+large datasets.
 
 \end{multicols}
 
