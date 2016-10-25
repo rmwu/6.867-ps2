@@ -323,17 +323,16 @@ While SVMs are effective and convenient to implement, large SVMs can be unwieldy
 \begin{equation}
    \min_w{\f{\lambda}{2}||w||^2} + \f{1}{n}\sum_{i=1}^n{\max\{0,1-y_i(w^Tx_i)\}}
 \end{equation}
-The Pegasos algorithm stochastically updates our weight vector $w$ based on the following algorithm.
+This problem is equivalent to C-SVM, when $C= \f{1}{n\lambda}$. Given a regularization constant $\lambda$ and a maximum number of ``epochs,'' the Pegasos algorithm stochastically updates our weight vector $w$ as follows.
+\begin{enumerate}
+\item Initialize $t$ and $w_0$ to 0.
+\item At each iteration, increment $t$ and set a decaying step size $\eta_t = 1/(t\lambda)$.
+\item If $y_i(w_t^Tx_i)<1$, then $w_{t+1}\leftarrow(1-\eta_t\lambda)w_t+\eta_ty_ix_i$. Else,  $w_{t+1}\leftarrow(1-\eta_t\lambda)w_t$.
+\item Repeat until $t$ reaches the maximum number of epochs.
+\end{enumerate}
+We implemented the Pegasos algorithm and incorporated a bias term with a corresponding column of 1s in $X$. The bias $w_0$ is not penalized by regularization, so we update $w_0$ as $w_0 = w_0 + \eta_t y_i$.
 
-% TODO
-
-We implemented the Pegasos algorithm and incorporated a $w_0$ term, such the magnitude of $w_0$ is not penalized. We update $w_0$ as
-\begin{equation}\label{eq:pegasos-svm}
-    w_0 = w_0 + \eta_t y^{(i)}.
-\end{equation}
-
-Now recall that we define the margin as $1/||w||$. Then, as we increase $\lambda$, the margin also increases.
-
+Now recall that we define the margin as $1/||w||$. The regularization constant $\lambda$ limits the magnitude of $w$, so as we increase $\lambda$, $||w||$ decreases, and margin increases. This effect can be seen empirically in Figure \ref{fig:3-2-margins}.
 \begin{figure*}[h]
    \centering
 	\includegraphics[width=3in]{img/3-2-margins.pdf}
@@ -347,9 +346,16 @@ We can extend the Pegasos algorithm to solve the following kernelized soft-SVM p
 \begin{equation}
    \min_w{\f{\lambda}{2}||w||^2} + \f{1}{n}\sum_{i=1}^n{\max\{0,1-y_i(w^T\phi(x_i))\}}
 \end{equation}
-We implemented the following algorithm to take in a Gram matrix, where entry $k_{i,j} = K(x^{(i)},x^{(j)}) = \phi(x^{(i)})\cdot\phi(x^{(j)})$. We did not incorporate a bias term.
+The following kernelized Pegasos takes in a Gram matrix, where entry $k_{i,j} = K(x^{(i)},x^{(j)}) = \phi(x^{(i)})\cdot\phi(x^{(j)})$.
+\begin{enumerate}
+\item Initialize $t$ and $\alpha_{t=0}$ to 0.
+\item At each iteration, increment $t$ and set a decaying step size $\eta_t = 1/(t\lambda)$.
+\item If $y_i(\sum_j{\alpha_jK(x_j,x_i)})<1$, then $\alpha_{i}\leftarrow(1-\eta_t\lambda)\alpha_i+\eta_ty_i$. Else,  $\alpha_{i}\leftarrow(1-\eta_t\lambda)\alpha_i$.
+\item Repeat until $t$ reaches the maximum number of epochs.
+\end{enumerate}
+Note that the primary difference between the kernelized Pegasos and the original version is that in place of $w_t$, we now store $\alpha_i$ for each $i\in\{1,\dots,n\}$, and in place of $x_i$, we apply some transformation $\phi(x_i)$.
 
-% TODO
+We implemented the kernelized Pegasos algorithm with a Gaussian kernel, given fixed $\lambda = 0.02$ and varying bandwidths $\gamma = \{2^{-2},\dots,2^2\}$.
 
 Given the support vector values $\alpha$, we can make predictions for new inputs $x$ as 
 \begin{equation}
@@ -364,7 +370,7 @@ Given the support vector values $\alpha$, we can make predictions for new inputs
 
 We apply these various classifiers to classify the MNIST (handwriting digit) dataset into binary subsets of digits. Each MNIST image contains 28 by 28 pixels, represented as a flattened vector of length 784. Features in this dataset take on values in the interval [0, 255] inclusive, representing the grayscale luminescence of each pixel.
 
-We optionally normalized input pixel features to the range [-1, 1], so that an input vector $x$ is mapped to $2x/255-1$. This normalization marginally improved classification accuracy for the test set (figure \ref{fig:4-1-normalization}).
+We optionally normalized input pixel features to the range [-1, 1], so that an input vector $x$ is mapped to $2x/255-1$. This normalization marginally improved classification accuracy for the test set (Figure \ref{fig:4-1-normalization}).
 
 \begin{figure*}[h]
    \centering
