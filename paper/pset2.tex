@@ -43,11 +43,13 @@ Recall that the objective function for $L_2$ regularization takes the form
 \begin{equation}
     E_{LR}(w, w_0) = \NLL(w, w_0) + \lambda ||w||_2^2
 \end{equation}
-where NLL is the logistic loss, when $y$ values are $\pm 1$:
+where NLL is the logistic loss
 \begin{equation}
     \text{NLL}(w, w_0) = \sum_i{\log(1+\exp(-y^{(i)}(wx^{(i)}+w_0)))}
 \end{equation}
-We minimized the objective function using standard gradient descent methods, with the gradient of $E_{LR}$ with respect to $w$ as
+where the $y\sind{i}$ are labels $\pm 1$.
+We minimized the objective function by gradient descent;
+note that the gradient of $E_{LR}$ with respect to $w$ is
 \begin{equation}
     \f{d E_{LR}}{dw} = \sum_{i=1}^n\lt(s(w\cdot x^{(i)})-y^{(i)}\rt)x^{(i)} - 2\lambda w
 \end{equation}
@@ -59,11 +61,14 @@ each with 400 training samples,
 and 200 testing samples.
 % TODO ^^ this is not true
 The data consisted of two-dimensional vectors $x\sind{i}$ labeled by $y\sind{i} = \pm1$.
-We observed that $||w||$ decreases, eventually converging, over time.
+
+As gradient descent progressed,
+we observed that $||w||$ decreased, eventually converging.
 When $\lambda = 1$, $||w||$ is penalized,
 we see that there is less fluctuation in $||w||$ (Figure~\ref{fig:weight-regularization}).
 The exact shift in $||w||$, however,
 was quite sensitive to changes in initial guess.
+% TODO ^^ be more clear
 
 \begin{figure*}
    \centering
@@ -95,15 +100,15 @@ more accurate classifications as $\lambda$ increased to large values.
 However, both regularization schemes produced similar decision boundaries (Figure \ref{fig:1-3-boundaries}).
 For small $\lambda$,
 $L_2$ regularization resulted in smaller weights
-than $L_1$ regularization, since the magnitude of $w$ is penalized more. % (figure \ref{fig:l1-l2}).
+than $L_1$ regularization, since the magnitude of $w$ is penalized more.
 
-After training, we used our validation set to select the optimal hyperparameters for each dataset (Table \ref{table:regularization-four}).
-Some datasets did not have a unique optimal parameter; for these, we arbitrarily selected one.
-These values were then to obtain the performance on our test sets (Table \ref{table:1-3-optimal}).
-
-% TODO explain datasets
-
-% TODO and then?
+We selected the optimal hyperparameters for each dataset
+by rate of misclassification on the validation set
+(Table~\ref{table:regularization-four}).
+Some datasets did not have a unique optimal parameter.
+For these, we arbitrarily selected one.
+We evaluated these optimal models' performance on our test sets;
+we present our results in Table~\ref{table:1-3-optimal}.
 
 \begin{table*}
     \caption{Classification accuracy for logistic regression with $L_2$ and $L_1$ regularization.
@@ -203,7 +208,8 @@ the support vectors are $(2,2)$ and $(0,-1)$.
 We tested our soft-SVM implementation
 on the same four 2D datasets from the previous section.
 Setting regularization parameter $C=1$,
-we get the following support vector counts and misclassification rates on validation data:
+we get the following support vector counts
+and misclassification rates on validation data:
 
 \begin{center}
 \begin{tabular}{|c|c|c|}
@@ -220,7 +226,8 @@ Our model clearly performs better in datasets 1 and 3.
 Indeed, these datasets are linearly separable (or very nearly so),
 as is apparent from Figure~\ref{fig:2-3-model-selection},
 where the test data from each dataset are plotted.
-Observe also that the number of support vector generally tracks the misclassification rate.
+Observe also that the number of support vectors
+generally tracks the misclassification rate.
 
 In the next section, we will kernelize our SVM routine
 to handle nonlinearities in our data
@@ -311,7 +318,9 @@ and in the tighter shapes of the decision boundaries.
    \includegraphics[width=2.4in]{img/p2-3-d2-c1-rbf02/validate.pdf}
    \includegraphics[width=2.4in]{img/p2-3-d2-c1-rbf06/validate.pdf}
    \includegraphics[width=2.4in]{img/p2-3-d2-c1-rbf20/validate.pdf}
-   \caption{SVM decision boundaries (with contours $t = \pm1$) on validation data for dataset 2, with $C = 1$ and Gaussian RBF kernels with bandwidths $\sigma=0.2,0.6,2.0$, in that order.}
+   \caption{SVM decision boundaries (with contours $t = \pm1$) on validation data
+   for dataset 2, with $C = 1$ and Gaussian RBF kernels
+   with bandwidths $\sigma=0.2,0.6,2.0$, in that order.}
    \label{fig:2-3-gaussian-rbf}
 \end{figure*}
 
@@ -363,27 +372,28 @@ using the Pegasos algorithm
    \min_w \lt( \f{\lambda}{2}||w||^2 + \f{1}{n}\sum_{i=1}^n{\max\{0,1-y_i(w^Tx_i)\}} \rt)
 \end{equation}
 
-This problem is equivalent to C-SVM, when $C= \f{1}{n\lambda}$. Given a regularization constant $\lambda$ and a maximum number of ``epochs,'' the Pegasos algorithm stochastically updates our weight vector $w$ as follows.
+This problem is equivalent to C-SVM for $C= \f{1}{n\lambda}$.
+Given a regularization parameter $\lambda$
+and some maximum number of ``epochs,''
+Pegasos stochastically updates our weight vector $w$ as follows.
 \begin{enumerate}
 \item Initialize $t$ and $w_0$ to 0.
 \item At each iteration, increment $t$ and set a decaying step size $\eta_t = 1/(t\lambda)$.
 \item If $y_i(w_t^Tx_i)<1$, then $w_{t+1}\leftarrow(1-\eta_t\lambda)w_t+\eta_ty_ix_i$. Else,  $w_{t+1}\leftarrow(1-\eta_t\lambda)w_t$.
 \item Repeat until $t$ reaches the maximum number of epochs.
 \end{enumerate}
-We implemented the Pegasos algorithm and incorporated a bias term with a corresponding column of 1s in $X$. The bias $w_0$ is not penalized by regularization, so we update $w_0$ as $w_0 = w_0 + \eta_t y_i$.
+We implemented the Pegasos algorithm and included a bias term $w_0$
+that we did not penalize by regularization.
+(We simply update $w_0$ as $w_0 = w_0 + \eta_t y_i$.)
 
-Now recall that we define the margin as $1/||w||$. The regularization constant $\lambda$ limits the magnitude of $w$, so as we increase $\lambda$, $||w||$ decreases, and margin increases. This effect can be seen empirically in Figure \ref{fig:3-2-margins}.
+Now recall that we define the margin as $||w||\inv$.
+The regularization constant $\lambda$ limits the magnitude of $w$,
+so as we increase $\lambda$, the margin grows.
+We show this effect empirically in Figure~\ref{fig:3-2-margins} for a sample dataset.
 
 % TODO
 
-We implemented Pegasos and incorporated a bias term~$w_0$ whose magnitude is not regularized.
-We update $w_0$ as
-\begin{equation}\label{eq:pegasos-svm}
-    w_0 = w_0 + \eta_t y^{(i)}.
-\end{equation}
-% TODO what is \eta_t
-
-\begin{figure*}[h]
+\begin{figure*}[t]
    \centering
 	\includegraphics[width=3in]{img/3-2-margins.pdf}
    \caption{Effect of changing $\lambda$ on margins}
@@ -391,12 +401,14 @@ We update $w_0$ as
 \end{figure*}
 
 \subsection{Kernelized Pegasos}
+\label{subsec:kernel-peg}
 
 We can extend the Pegasos algorithm
 to solve the following kernelized soft-SVM problem:
 \begin{equation}
    \min_w{\f{\lambda}{2}||w||^2} + \f{1}{n}\sum_{i=1}^n{\max\{0,1-y_i(w^T\phi(x_i))\}}
 \end{equation}
+% TODO ^^ how is this different?
 
 The following kernelized Pegasos takes in a Gram matrix, where entry $k_{i,j} = K(x^{(i)},x^{(j)}) = \phi(x^{(i)})\cdot\phi(x^{(j)})$.
 \begin{enumerate}
@@ -407,12 +419,14 @@ The following kernelized Pegasos takes in a Gram matrix, where entry $k_{i,j} = 
 \end{enumerate}
 Note that the primary difference between the kernelized Pegasos and the original version is that in place of a $d$ dimensional $w_t$, we now store $\alpha_i$ for each training instance, and in place of $x_i$, we apply some transformation $\phi(x_i)$.
 
-We implemented the kernelized Pegasos algorithm with a Gaussian kernel, given fixed $\lambda = 0.02$ and varying bandwidths $\gamma = \{2^{-2},\dots,2^2\}$.
+We implemented the kernelized Pegasos algorithm with a Gaussian RBF kernel, given fixed $\lambda = 0.02$ and varying bandwidths $\gamma = \{2^{-2},\dots,2^2\}$.
 
 Given the support vector values $\alpha$, we can make predictions for new inputs $x$ as 
 \begin{equation}
     \sum_j{a_j K(x^{(i)},x^{(j)}) < 1 }
 \end{equation}
+% TODO what?
+
 
 % % % % % % % % % %
 %    PROBLEM 4
@@ -480,7 +494,8 @@ and with bandwidths $\sigma = 0.03,0.1,0.3,\dots,300$ increasing logarithmically
 Unlike our linear SVMs,
 our kernelized SVM classifiers performed significantly better
 when trained on normalized data.
-Indeed, all validation and test set classification errors dropped by a factor of 10
+Indeed, all validation and test set classification errors
+dropped by roughly a factor of 10
 when we normalized.
 
 With normalized data, our optimal hyperparameters
@@ -509,25 +524,42 @@ the underlying dataset being nearly linearly separable.
 
 \subsection{Pegasos and Quadratic Programming}
 
+We now run kernelized Pegasos (section~\ref{subsec:kernel-peg})
+on the same four classification problems as above.
+Our test set accuracies are below:  % TODO use actual numbers
+\begin{center}    % TODO use actualnumbers
+\begin{tabular}{|c|c|c|c|c|}
+\hline
++ & - & $param_1$ & $param_2$ & Pegasos error \\\hline
+1 & 7 &30 & 10 & 4/300 \\
+3 & 5 &10 & 100 & 5/300\\
+4 & 9 & 30 & 10 & 16/300\\
+even & odd & - & - & - \\\hline
+\end{tabular}
+\end{center}
 
+BLAH BLAH comparing accuracies % TODO
 
+Finally, we consider the runtimes of
+our quadratic-programming based approach and Pegasos.
+For the 1/7 classification problem,
+using Pegasos parameter $\lambda = 123123123$ with $12123$ epochs
+% TODO change these numbers ^
+(chosen because they produced comparably accurate results as our QP approach),
+the training times of the two approaches increased as:
+\begin{center}
+    \begin{tabular}{|c|c|c|}\hline
+        training set size & QP time (s) & Pegasos time (s) \\\hline
+        200 & 18.1 & \\
+        300 & 30.6 & \\
+        400 & 46.3 & \\
+        500 & 67.8 & \\\hline
+    \end{tabular}
+\end{center}
+% TODO fill in for pegasos
 
+% summarize and explain findings
 
-
-
-
-
-
-
-%This normalization marginally improved classification accuracy for the test set (figure \ref{fig:4-1-normalization}).
-
-%\begin{figure*}[h]
-%   \centering
-%	\includegraphics[width=3in]{img/4-1-normalization.pdf}
-%	\includegraphics[width=3in]{img/4-1-normalization-train.pdf}
-%   \caption{Effect of pixel feature normalization on classification accuracy, for logistic regression and SVM classifiers. Will fix later}
-%   \label{fig:4-1-normalization}
-%\end{figure*}
 
 \end{multicols}
 
