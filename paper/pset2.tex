@@ -473,14 +473,28 @@ Note that we used unnormalized data for both.
 Normalization did not significantly affect test set accuracy
 for either model.
 
-We also manually inspected some of the classification errors.
-These images were generally very ambiguous
-(for example, a 4 that looks very much like a 9),
-explaining their misclassification.
+We also manually inspected some of the classification errors, as illustrated 
+in Figure \ref{fig:4-1-wrong}.
+These images were generally very ambiguous, even to the human eye,
+which explains their misclassification.
 
-
-% TODO STUFF make some images
-
+\begin{figure*}[t]
+   \centering
+   \includegraphics[width=1in]{img/4-1-wrong/4-1-wrong-11.pdf} \hspace{-.25in}
+   \includegraphics[width=1in]{img/4-1-wrong/4-1-wrong-35.pdf} \hspace{-.25in}
+   \includegraphics[width=1in]{img/4-1-wrong/4-1-wrong-68.pdf} \hspace{-.25in}
+   \includegraphics[width=1in]{img/4-1-wrong/4-1-wrong-82.pdf} \hspace{-.25in}
+   \includegraphics[width=1in]{img/4-1-wrong/4-1-wrong-138.pdf} \hspace{-.25in}
+   
+   \includegraphics[width=1in]{img/4-1-wrong/4-1-wrong-158.pdf} \hspace{-.25in}
+   \includegraphics[width=1in]{img/4-1-wrong/4-1-wrong-224.pdf} \hspace{-.25in}
+   \includegraphics[width=1in]{img/4-1-wrong/4-1-wrong-247.pdf} \hspace{-.25in}
+   \includegraphics[width=1in]{img/4-1-wrong/4-1-wrong-259.pdf} \hspace{-.25in}
+   \includegraphics[width=1in]{img/4-1-wrong/4-1-wrong-281.pdf} \hspace{-.25in}
+   \caption{Misclassified images. The top row contains images all labeled as 4, 
+   while the bottom row contains images labeled as 9.}
+   \label{fig:4-1-wrong}
+\end{figure*}
 
 \subsection{SVMs with RBF kernels}
 
