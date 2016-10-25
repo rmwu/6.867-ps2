@@ -36,6 +36,7 @@
 % % % % % % % % % %
 
 \section{Logistic Regression}
+\label{sec:lr}
 
 We implemented logistic regression with $L_2$ regularization.
 Recall that the objective function for $L_2$ regularization takes the form
@@ -107,6 +108,7 @@ for each dataset (table \ref{table:regularization-four}).
 % % % % % % % % % %
 
 \section{Support Vector Machines (SVMs)}
+\label{sec:svm}
 
 \subsection{Dual Soft-SVM}
 
@@ -194,6 +196,7 @@ to handle nonlinearities in our data
 
 
 \subsection{Kernelization}
+\label{subsec:kernelization}
 
 It is often useful to map our raw data
 with some nonlinear feature map $\phi$
@@ -370,17 +373,91 @@ Given the support vector values $\alpha$, we can make predictions for new inputs
 
 \section{MNIST Digit Recognition}
 
-We apply these various classifiers to classify the MNIST (handwriting digit) dataset into binary subsets of digits. Each MNIST image contains 28 by 28 pixels, represented as a flattened vector of length 784. Features in this dataset take on values in the interval [0, 255] inclusive, representing the grayscale luminescence of each pixel.
+We apply these various classifiers to the MNIST dataset
+of $28\times 28$ grayscale images of handwritten digits:
+each of the $28^2$ features corresponding to an image takes on an integer value in $[0, 255]$,
+representing the grayscale luminescence of each pixel.
 
-We optionally normalized input pixel features to the range [-1, 1], so that an input vector $x$ is mapped to $2x/255-1$. This normalization marginally improved classification accuracy for the test set (figure \ref{fig:4-1-normalization}).
+We optionally normalized input pixel features to the range $[-1, 1]$,
+so that an input vector $x$ is mapped to $\f{2x}{255}-1$,
+with all operations applying componentwise.
 
-\begin{figure*}[h]
-   \centering
-	\includegraphics[width=3in]{img/4-1-normalization.pdf}
-	\includegraphics[width=3in]{img/4-1-normalization-train.pdf}
-   \caption{Effect of pixel feature normalization on classification accuracy, for logistic regression and SVM classifiers. Will fix later}
-   \label{fig:4-1-normalization}
-\end{figure*}
+For all our following experiments,
+we chose pairs of disjoint subsets of digits
+to use as our positive and negative classes for binary classification.
+
+\subsection{Linear Models}
+
+We begin by exploring the efficacy of our linear models on MNIST.
+In particular, we will compare logistic regression from section~\ref{sec:lr}
+with the linear SVM classifier from section~\ref{sec:svm}.
+
+
+\begin{center}
+\begin{tabular}{|c|c|}
+\hline
++ & - \\\hline
+1 & 7 \\
+3 & 5 \\
+4 & 9 \\
+even & odd \\\hline
+\end{tabular}
+\end{center}
+
+% TODO STUFF
+
+% mention that SVMs were sensitive to normalization
+
+\subsection{SVMs with RBF kernels}
+
+Next, we introduced nonlinearity into our models
+by using Gaussian RBF kernels with our SVM classifiers.
+We performed model selection as in section~\ref{subsec:kernelization}
+with only RBF kernels
+(with the same values of $C$ and with bandwidths $\sigma = 0.03,0.3,3,30, 300$).
+
+As with our linear SVMs,
+our kernelized SVM classifiers performed significantly better
+when trained on normalized data.
+% did linear depend on normalization?
+Indeed, all validation and test set classification errors dropped by a factor of 10
+when we normalized.
+
+With normalized data, our optimal hyperparameters
+and their corresponding test set error rates are below:
+\begin{center}
+\begin{tabular}{|c|c|c|c|c|}
+\hline
++ & - & $\sigma$ & $C$ & test error \\\hline
+1 & 7 & 30 & 10 & 4/300 \\
+3 & 5 & 30 & 100 & 10/300\\
+4 & 9 & 30 & 10 & 16/300\\
+even & odd \\\hline
+\end{tabular}
+\end{center}
+
+
+\subsection{Pegasos and Quadratic Programming}
+
+
+
+
+
+
+
+
+
+
+
+%This normalization marginally improved classification accuracy for the test set (figure \ref{fig:4-1-normalization}).
+
+%\begin{figure*}[h]
+%   \centering
+%	\includegraphics[width=3in]{img/4-1-normalization.pdf}
+%	\includegraphics[width=3in]{img/4-1-normalization-train.pdf}
+%   \caption{Effect of pixel feature normalization on classification accuracy, for logistic regression and SVM classifiers. Will fix later}
+%   \label{fig:4-1-normalization}
+%\end{figure*}
 
 \end{multicols}
 
