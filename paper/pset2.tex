@@ -319,26 +319,34 @@ We could also use classification error on the validation set.
 
 \section{SVMs with Pegasos}
 
-While SVMs are effective and convenient to implement, large SVMs can be unwieldy to solve. Instead, we may consider solving the following soft-SVM using the Pegasos algorithm (primal estimated sub-gradient solver for SVM).
+While generally effective, convenient, and efficient,
+SVMs become unwieldy to solve as they become large.
+Thus, we may consider solving the following soft-SVM
+using the Pegasos algorithm
+(primal estimated sub-gradient solver for SVM):
 \begin{equation}
-   \min_w{\f{\lambda}{2}||w||^2} + \f{1}{n}\sum_{i=1}^n{\max\{0,1-y_i(w^Tx_i)\}}
+   \min_w \lt( \f{\lambda}{2}||w||^2 + \f{1}{n}\sum_{i=1}^n{\max\{0,1-y_i(w^Tx_i)\}} \rt)
 \end{equation}
 The Pegasos algorithm stochastically updates our weight vector $w$ based on the following algorithm.
 
 % TODO
 
-We implemented the Pegasos algorithm and incorporated a $w_0$ term, such the magnitude of $w_0$ is not penalized. We update $w_0$ as
+We implemented Pegasos and incorporated a bias term~$w_0$ whose magnitude is not regularized.
+We update $w_0$ as
 \begin{equation}\label{eq:pegasos-svm}
     w_0 = w_0 + \eta_t y^{(i)}.
 \end{equation}
+% TODO what is \eta_t
 
 \subsection{Kernelized Pegasos}
 
-We can extend the Pegasos algorithm to solve the following kernelized soft-SVM problem.
+We can extend the Pegasos algorithm
+to solve the following kernelized soft-SVM problem:
 \begin{equation}
    \min_w{\f{\lambda}{2}||w||^2} + \f{1}{n}\sum_{i=1}^n{\max\{0,1-y_i(w^T\phi(x_i))\}}
 \end{equation}
-We implemented the following algorithm to take in a Gram matrix, where entry $k_{i,j} = K(x^{(i)},x^{(j)}) = \phi(x^{(i)})\cdot\phi(x^{(j)})$. We did not incorporate a bias term.
+We implemented the following algorithm to take in a Gram matrix, where entry $k_{ij} = K(x^{(i)},x^{(j)}) = \phi(x^{(i)})\cdot\phi(x^{(j)})$.
+We did not incorporate a bias term.
 
 % TODO
 
