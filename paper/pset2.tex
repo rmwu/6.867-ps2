@@ -37,7 +37,9 @@
 %    PROBLEM 2
 % % % % % % % % % %
 
-\section{Support Vector Machines (SVM)}
+\section{Support Vector Machines (SVMs)}
+
+\subsection{Dual Soft-SVM}
 
 We implemented the dual form of soft-SVM
 with third-party convex optimization software.
@@ -52,26 +54,75 @@ Recall that the soft-SVM dual optimization problem takes the form
         & \displaystyle\sum_{i=1}^n \alpha_i y\sind{i} = 0
     \end{array}
 \end{equation}
-for training data $x\sind{i}, y\sind{i}$ ($i=1, \dots, n$),
+for training data $x\sind{i}$ ($i=1, \dots, n$),
 with labels $y\sind i = \pm 1$.
+$C$ is a hyperparameter controlling the amount of slack we permit.
 Given a new data point $x$,
-we would predict its label $y$ as
+we predict its label $y$ as
 \begin{equation}
     \label{eq:soft-svm-predict}
-    y = \sgn\lt(\sum_i \alpha^*_i y\sind{i} \angb{x\sind{i}, x}\rt)
+    y = \sgn\lt(\sum_i \alpha^*_i y\sind{i} \angb{x\sind{i}, x}\rt) \equiv \sgn(t(x))
 \end{equation}
 where $\alpha^*_i$ is the optimal value of $\alpha_i$
-from the previous optimization.
+from Equation~\ref{eq:soft-svm-dual}.
 
+For instance, given the sample dataset shown
+in Table~\ref{tab:2-1-toy-dataset},
+our optimization problem takes the form
+\begin{equation}
+    \label{eq:soft-svm-dual-concrete}
+    \begin{array}{ll@{}ll}
+        \text{maximize}  &\displaystyle -\f{1}{2}\alpha^T
+        \left[
+            \begin{array}{cccc}
+                8 & 10 & 2 & 10 \\
+                10 & 13 & 3 & 12 \\
+                2 & 3 & 1 & 2 \\
+                10 & 12 & 2 & 13
+            \end{array}
+        \right]
+        \alpha
+        +
+        \sum_{i=1}^4 \alpha_i \\
+        \text{subject to}& 0 \le \alpha_i \le C\\
+        & \alpha_1 + \alpha_2 = \alpha_3 + \alpha_4
+    \end{array}
+\end{equation}
+Upon inspection,
+it is clear that for large $C$
+(i.e. in the hard-SVM limit),
+the support vectors are $(2,2)$ and $(0,-1)$.
 % TODO
-% Show in your report the constraints and objective that you generate for the 2D problem with positive examples (2, 2), (2, 3) and negative examples (0, -1), (-3, -2). Which examples are support vectors?
+% include a picture?
+
+\begin{table*}[h]
+    \caption{default}
+    \begin{center}
+    \begin{tabular}{|c|c|c|}
+    $x_1$ & $x_2$ & $y$ \\\hline
+    2 & 2 & +1 \\
+    2 & 3 & +1 \\
+    0 & -1 & -1 \\
+    -3 & -2 & -1
+    \end{tabular}
+    \end{center}
+    \label{tab:2-1-toy-dataset}
+\end{table*}
 
 We tested our soft-SVM implementation
 on the same four 2D datasets from the previous section.
 % TODO
 % makes sure 2D datasets are mentioned in previous section
-Setting the regularization parameter $C=1$,
-we get % TODO fill in
+Setting regularization parameter $C=1$,
+% TODO fill in
+% mention linearly separable case vs. non-separable
+
+% results
+%1 (4/400 support vectors, 0/200 misclassification)
+%2 (174/400 support vectors, 36/200 error)
+%3 (33/400 support vectors, 6/200 error)
+%4 (392/400 sup vec, 122/400 error)
+
 
 
 \subsection{Kernelization}
@@ -97,7 +148,8 @@ Equations~\ref{eq:soft-svm-dual} and \ref{eq:soft-svm-predict}
 with the corresponding kernels,
 we arrive at the kernelized soft-SVM optimization problem.
 
-We tested our kernelized SVM routine with a linear kernel
+We kernelized our SVM routine
+and tested it with a linear kernel
 \begin{equation}
     k(x, x') = 1 + x\cdot x'
 \end{equation}
@@ -105,7 +157,7 @@ and with Gaussian RBF kernels
 \begin{equation}
     k(x, x') = \exp\lt(-\f{|x - x'|^2}{2\sigma^2}\rt)
 \end{equation}
-with varying bandwidth~$\sigma$.  % TODO how did sigma vary?
+with varying bandwidth~$\sigma$ on the same four datasets as before.  % TODO how did sigma vary?
 We chose values of $C$ in
 \[
     C \in \{0.01, 0.1, 1, 10, 100\}
@@ -113,9 +165,51 @@ We chose values of $C$ in
 
 % TODO
 % Report your results and answer the following questions:
-%
-%(a) What happens to the geometric margin 1/|w| as C increases? Will this always happen as we increase C?%(b) What happens to the number of support vectors as C increases?
-%%(c) The value of C will typically change the resulting classifier and therefore also affects the accuracy on test examples. Why would maximizing the geometric margin 1/||w|| on the training set not be an appropriate criterion for selecting C? Is there an alternative criterion that we could use for this purpose?
+
+%(a) What happens to the geometric margin 1/|w| as C increases? Will this always happen as we increase C?
+Finally, we make some observations about hyperparameter~$C$.
+From Equation~\ref{eq:soft-svm-dual},
+larger values of $C$ correspond to less tolerance for slack.
+So for small $C$,
+the model favors
+maximizing the margin at the expense of slack,
+so we expect increasing $C$ shrinks the geometric margin,
+as our experiments also show.
+% TODO illustrate?
+
+% (b) What happens to the number of support vectors as C increases?
+Consequently, there are fewer support vectors with large $C$:
+the margin becomes tighter,
+and the model grows increasingly averse to margin errors,
+which make up the bulk of the support vectors for small $C$.
+
+%(c)
+%The value of C will typically change the resulting classifier
+%and therefore also affects the accuracy on test examples.
+%Why would maximizing the geometric margin 1/|w|
+%on the training set
+%not be an appropriate criterion for selecting C?
+%Is there an alternative criterion that we could use for this purpose?
+The size of the margin
+is not a good metric for choosing $C$,
+as can make the margin arbitrarily large
+by taking $C \to 0$
+(indeed, setting $C = 0$ allows arbitrary amounts of slack
+with no penalty on the objective function).
+We'd instead like a metric that evaluates
+the performance of a given $C$
+on unseen data.
+
+A better metric for $C$ is
+the hinge loss incurred by our classifier
+(Equation~\ref{eq:soft-svm-predict} without the $\sgn$ operator)
+on a validation dataset:
+\begin{equation}
+    \sum_{i} \max(0, 1 - y\sind{i} t(x\sind{i}))
+\end{equation}
+where the sum is taken over all validation data.
+
+
 
 
 
