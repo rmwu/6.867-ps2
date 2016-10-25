@@ -27,13 +27,14 @@ name = args.data_name
 C = args.C
 rbf_sigma = args.rbf
 
-save_path_train = save_path_val = None
+save_path_train = save_path_val = save_path_test = None
 if args.save_path:
 	path = args.save_path
 	if not os.path.exists(path):
 		os.makedirs(path)
 	save_path_train = os.path.join(path, "train.pdf")
 	save_path_val = os.path.join(path, "validate.pdf")
+	save_path_test = os.path.join(path, "test.pdf")
 
 print('======Training======')
 # load data from csv files
@@ -57,8 +58,9 @@ print("training SVM {}, C = {}".format(kernel_msg, C))
 alphas, predictSVM = svm.train_svm(X, Y, C=C, kernel_func=kernel)
 
 # plot training results
-plotDecisionBoundary(X, Y, predictSVM, [-1, 0, 1],
-	title='SVM Train', save_path=save_path_train)
+if (not args.no_show) or args.save_path:
+	plotDecisionBoundary(X, Y, predictSVM, [-1, 0, 1],
+		title='SVM Train', save_path=save_path_train)
 
 # print geometry stats
 print("geometric margin: {}" \
@@ -72,16 +74,25 @@ validate = loadtxt('data/data'+name+'_validate.csv')
 X = validate[:, 0:2]
 Y = validate[:, 2:3]
 
-errors = np.not_equal(Y.T, np.sign(predictSVM(X)))
+errors = svm.errors(X, Y, predictSVM)
 print("validation error rate: {} = {}/{}" \
 	.format(np.mean(errors),
 		    np.sum(errors),
 		    errors.size))
 
 # plot validation results
-plotDecisionBoundary(X, Y, predictSVM, [-1, 0, 1],
-	title='SVM Validate, {}, $C = {}$'.format(kernel_msg, C),
-	save_path=save_path_val)
+if (not args.no_show) or args.save_path:
+	plotDecisionBoundary(X, Y, predictSVM, [-1, 0, 1],
+		title='SVM Validate, {}, $C = {}$'.format(kernel_msg, C),
+		save_path=save_path_val)
+
+	validate = loadtxt('data/data'+name+'_validate.csv')
+	Xtest = validate[:, 0:2]
+	Ytest = validate[:, 2:3]
+
+	plotDecisionBoundary(Xtest, Ytest, predictSVM, [-1, 0, 1],
+		title='SVM Test, {}, $C = {}$'.format(kernel_msg, C),
+		save_path=save_path_test)
 
 if not args.no_show:
 	pl.show()
