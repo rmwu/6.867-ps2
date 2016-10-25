@@ -39,6 +39,8 @@ def main():
     parser.add_argument("--neg", nargs="+")
     parser.add_argument("--normalize", action="store_true")
     parser.add_argument("--rbf", action="store_true")
+    parser.add_argument("--sigma", nargs="+", type=float)
+    parser.add_argument("--C", nargs="+", type=float)
     args = parser.parse_args()
 
     positive = args.pos
@@ -80,10 +82,11 @@ def main():
     def optimize(kernel_func):
         return find_optimal_parameters(partitioned,
                                        get_svm_classification_error,
-                                       kernel_func=kernel_func)
+                                       C_range=args.C,
+                                       kernel_func=kernel_func,)
 
     if args.rbf:
-        bandwidths = [3, 30, 300, 3000]
+        bandwidths = args.sigma
         rbf_optimization_results = [optimize(svm.make_gaussian_rbf(sigma)) for sigma in bandwidths]
         rbf_val_errors = [x[1] for x in rbf_optimization_results]
         best_sigma_ind = np.argmin(rbf_val_errors)
