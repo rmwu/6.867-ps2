@@ -87,7 +87,7 @@ def train_svm(X, Y, C=float('inf'),
     # instead, we pick the closest to C/2, which should solve our woes
     i = np.argmin(np.absolute(alphas  - C/2))
 
-    eps = 1e-6 * C
+    eps = 1e-5 * C
     clipped_alphas = (alphas > eps) * alphas
 
     optimal_bias = Y[i] - (alphas * Y).T.dot(kernel_function(X, X[i]))
